@@ -4,6 +4,7 @@ library(e1071)
 library(rpart)
 library(rpart.plot)
 library(maptree)
+source("C:/Users/joshua/Downloads/lin-regr-util.R")
 
 source("/Users/seansabour/Desktop/School/CST495 Data Science/Homework/class-util.R")
 source("/Users/seansabour/Desktop/School/CST495 Data Science/Homework/lin-regr-util.R")
@@ -306,22 +307,26 @@ total_teams$team_id = NULL
 total_teams$game_id = NULL
 
 #numerical
-total_teams$pts = as.numeric(total_teams$pts)
-total_teams$fgm = as.numeric(total_teams$fgm)
-total_teams$fg3m = as.numeric(total_teams$fg3m)
-total_teams$fga = as.numeric(total_teams$fga)
-total_teams$fg3a = as.numeric(total_teams$fg3a)
-total_teams$ftm = as.numeric(total_teams$ftm)
-total_teams$fta = as.numeric(total_teams$fta)
-total_teams$oreb = as.numeric(total_teams$oreb)
-total_teams$dreb = as.numeric(total_teams$dreb)
-total_teams$ast = as.numeric(total_teams$ast)
-total_teams$stl = as.numeric(total_teams$stl)
-total_teams$blk = as.numeric(total_teams$blk)
-total_teams$tov = as.numeric(total_teams$tov)
-total_teams$fg_pct = as.numeric(total_teams$fg_pct)
-total_teams$ft_pct = as.numeric(total_teams$ft_pct)
-total_teams$fg3_pct = as.numeric(total_teams$fg3_pct)
+
+
+
+
+total_teams$pts = as.numeric(as.character(total_teams$pts))
+total_teams$fgm = as.numeric(as.character(total_teams$fgm))
+total_teams$fg3m = as.numeric(as.character(total_teams$fg3m))
+total_teams$fga = as.numeric(as.character(total_teams$fga))
+total_teams$fg3a = as.numeric(as.character(total_teams$fg3a))
+total_teams$ftm = as.numeric(as.character(total_teams$ftm))
+total_teams$fta = as.numeric(as.character(total_teams$fta))
+total_teams$oreb = as.numeric(as.character(total_teams$oreb))
+total_teams$dreb = as.numeric(as.character(total_teams$dreb))
+total_teams$ast = as.numeric(as.character(total_teams$ast))
+total_teams$stl = as.numeric(as.character(total_teams$stl))
+total_teams$blk = as.numeric(as.character(total_teams$blk))
+total_teams$tov = as.numeric(as.character(total_teams$tov))
+total_teams$fg_pct = as.numeric(as.character(total_teams$fg_pct))
+total_teams$ft_pct = as.numeric(as.character(total_teams$ft_pct))
+total_teams$fg3_pct = as.numeric(as.character(total_teams$fg3_pct))
 
 set.seed(132)
 split = split_data(total_teams)
@@ -333,21 +338,17 @@ head(total_teams)
 head(total_teams$matchup)
 head(tr_data)
 
-fit = naiveBayes(wl ~ ft_pct + oreb + dreb + reb + ast + stl + blk + tov + pf + pts, data= tr_data, laplace = 1)
-summary(fit)
+# fit = naiveBayes(wl ~ ft_pct + oreb + dreb + reb + ast + stl + blk + tov + pf + pts, data= tr_data, laplace = 1)
+# summary(fit)
 
+head(total_teams, 1)
 
 fv = c("ha","fgm","fga","fg3m","fg3a","ftm","fta","oreb","dreb","ast","stl","blk","tov")
 
-fit = lm(pts ~ ha + min + fgm +  fga + fg_pct + fg3m + fg3a + fg3_pct + ftm + fta + ft_pct +  oreb + dreb + reb + ast +  stl + blk  + tov +  pf , data = tr_data)
+fit3 = lm(pts ~ fgm + oreb + dreb + reb + ast + stl + tov + pf, data = tr_data)
+summary(fit3)
 
-predict(fit,newdata = te_data )
-
-predicted = predict(fit, newdata = te_data)
-
-conf_mtx = table(predicted, te_data$pt)
-
-plot(conf_mtx)
-
-mean(te_data$wl == predicted)
+predicted = predict(fit3, newdata = te_data)
+actual = te_data$pts
+plot_predict_actual(predicted, actual, 2000, "Predictions from test data")
 
