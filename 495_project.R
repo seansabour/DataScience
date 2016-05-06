@@ -5,8 +5,8 @@ library(rpart)
 library(rpart.plot)
 library(maptree)
 
-source("C:/Users/joshua/Downloads/class-util.R")
-source("C:/Users/joshua/Downloads/lin-regr-util.R")
+source("/Users/seansabour/Desktop/School/CST495 Data Science/Homework/class-util.R")
+source("/Users/seansabour/Desktop/School/CST495 Data Science/Homework/lin-regr-util.R")
 
 nba_stats =  fromJSON("http://stats.nba.com/stats/leaguedashteamptshot?LeagueID=00&PerMode=Totals&Season=2014-15&SeasonType=Regular%20Season")
 nba_stats2 = fromJSON("http://stats.nba.com/stats/leaguedashplayerptshot?LeagueID=00&PerMode=Totals&Season=2014-15&SeasonType=Regular%20Season")
@@ -309,7 +309,10 @@ head(tr_data)
 fit = naiveBayes(wl ~ ft_pct + oreb + dreb + reb + ast + stl + blk + tov + pf + pts, data= tr_data, laplace = 1)
 summary(fit)
 
-
+# Creates Column Home or Away
+x = grep(pattern= "[@]",total_teams$matchup) 
+total_teams$ha[x] = 'A'
+total_teams$ha[-x] = 'H'
 
 predicted = predict(fit, newdata = te_data)
 
