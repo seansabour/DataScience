@@ -296,6 +296,33 @@ total_teams$matchup = factor(total_teams$matchup)
 
 plot(total_teams$game_date)
 
+
+
+# Data Cleaning
+x = grep(pattern= "[@]",total_teams$matchup) 
+total_teams$ha[x] = '1'
+total_teams$ha[-x] = '0'
+total_teams$team_id = NULL
+total_teams$game_id = NULL
+
+#numerical
+total_teams$pts = as.numeric(total_teams$pts)
+total_teams$fgm = as.numeric(total_teams$fgm)
+total_teams$fg3m = as.numeric(total_teams$fg3m)
+total_teams$fga = as.numeric(total_teams$fga)
+total_teams$fg3a = as.numeric(total_teams$fg3a)
+total_teams$ftm = as.numeric(total_teams$ftm)
+total_teams$fta = as.numeric(total_teams$fta)
+total_teams$oreb = as.numeric(total_teams$oreb)
+total_teams$dreb = as.numeric(total_teams$dreb)
+total_teams$ast = as.numeric(total_teams$ast)
+total_teams$stl = as.numeric(total_teams$stl)
+total_teams$blk = as.numeric(total_teams$blk)
+total_teams$tov = as.numeric(total_teams$tov)
+total_teams$fg_pct = as.numeric(total_teams$fg_pct)
+total_teams$ft_pct = as.numeric(total_teams$ft_pct)
+total_teams$fg3_pct = as.numeric(total_teams$fg3_pct)
+
 set.seed(132)
 split = split_data(total_teams)
 tr_data = split[[1]]
@@ -309,14 +336,16 @@ head(tr_data)
 fit = naiveBayes(wl ~ ft_pct + oreb + dreb + reb + ast + stl + blk + tov + pf + pts, data= tr_data, laplace = 1)
 summary(fit)
 
-# Creates Column Home or Away
-x = grep(pattern= "[@]",total_teams$matchup) 
-total_teams$ha[x] = 'A'
-total_teams$ha[-x] = 'H'
+
+fv = c("ha","fgm","fga","fg3m","fg3a","ftm","fta","oreb","dreb","ast","stl","blk","tov")
+
+fit = lm(pts ~ ha + min + fgm +  fga + fg_pct + fg3m + fg3a + fg3_pct + ftm + fta + ft_pct +  oreb + dreb + reb + ast +  stl + blk  + tov +  pf , data = tr_data)
+
+predict(fit,newdata = te_data )
 
 predicted = predict(fit, newdata = te_data)
 
-conf_mtx = table(predicted, te_data$wl)
+conf_mtx = table(predicted, te_data$pt)
 
 plot(conf_mtx)
 
