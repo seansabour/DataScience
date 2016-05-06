@@ -285,8 +285,6 @@ total_teams = rbind(playerstat_Hawks,
 )
 
 
-total_teams$ha 
-head(total_teams)
 names(total_teams) = tolower(names(total_teams))
 
 total_teams$wl = factor(total_teams$wl)
@@ -302,26 +300,27 @@ plot(total_teams$game_date)
 x = grep(pattern= "[@]",total_teams$matchup) 
 total_teams$ha[x] = '1'
 total_teams$ha[-x] = '0'
-total_teams$team_id = NULL
-total_teams$game_id = NULL
+#total_teams$team_id = NULL
+#total_teams$game_id = NULL
 
 #numerical
-total_teams$pts = as.numeric(total_teams$pts)
-total_teams$fgm = as.numeric(total_teams$fgm)
-total_teams$fg3m = as.numeric(total_teams$fg3m)
-total_teams$fga = as.numeric(total_teams$fga)
-total_teams$fg3a = as.numeric(total_teams$fg3a)
-total_teams$ftm = as.numeric(total_teams$ftm)
-total_teams$fta = as.numeric(total_teams$fta)
-total_teams$oreb = as.numeric(total_teams$oreb)
-total_teams$dreb = as.numeric(total_teams$dreb)
-total_teams$ast = as.numeric(total_teams$ast)
-total_teams$stl = as.numeric(total_teams$stl)
-total_teams$blk = as.numeric(total_teams$blk)
-total_teams$tov = as.numeric(total_teams$tov)
-total_teams$fg_pct = as.numeric(total_teams$fg_pct)
-total_teams$ft_pct = as.numeric(total_teams$ft_pct)
-total_teams$fg3_pct = as.numeric(total_teams$fg3_pct)
+total_teams$game_id = as.numeric(levels(total_teams$game_id))[total_teams$game_id]
+total_teams$pts = as.numeric(levels(total_teams$pts))[total_teams$pts]
+total_teams$fgm = as.numeric(levels(total_teams$fgm))[total_teams$fgm]
+total_teams$fg3m = as.numeric(levels(total_teams$fg3m))[total_teams$fg3m]
+total_teams$fga = as.numeric(levels(total_teams$fga))[total_teams$fga]
+total_teams$fg3a = as.numeric(levels(total_teams$fg3a))[total_teams$fg3a]
+total_teams$ftm = as.numeric(levels(total_teams$ftm))[total_teams$ftm]
+total_teams$fta = as.numeric(levels(total_teams$fta))[total_teams$fta]
+total_teams$oreb = as.numeric(levels(total_teams$oreb))[total_teams$oreb]
+total_teams$dreb = as.numeric(levels(total_teams$dreb))[total_teams$dreb]
+total_teams$ast = as.numeric(levels(total_teams$ast))[total_teams$ast]
+total_teams$stl = as.numeric(levels(total_teams$stl))[total_teams$stl]
+total_teams$blk = as.numeric(levels(total_teams$blk))[total_teams$blk]
+total_teams$tov = as.numeric(levels(total_teams$tov))[total_teams$tov]
+total_teams$fg_pct = as.numeric(levels(total_teams$fg_pct))[total_teams$fg_pct]
+total_teams$ft_pct = as.numeric(levels(total_teams$ft_pct))[total_teams$ft_pct]
+total_teams$fg3_pct = as.numeric(levels(total_teams$fg3_pct))[total_teams$fg3_pct]
 
 set.seed(132)
 split = split_data(total_teams)
@@ -329,25 +328,14 @@ tr_data = split[[1]]
 te_data = split[[2]]
 
 
-head(total_teams)
-head(total_teams$matchup)
-head(tr_data)
-
-fit = naiveBayes(wl ~ ft_pct + oreb + dreb + reb + ast + stl + blk + tov + pf + pts, data= tr_data, laplace = 1)
-summary(fit)
-
 
 fv = c("ha","fgm","fga","fg3m","fg3a","ftm","fta","oreb","dreb","ast","stl","blk","tov")
 
-fit = lm(pts ~ ha + min + fgm +  fga + fg_pct + fg3m + fg3a + fg3_pct + ftm + fta + ft_pct +  oreb + dreb + reb + ast +  stl + blk  + tov +  pf , data = tr_data)
+fit = lm(pts ~ ha  + fgm + stl + blk + ast + fg3_pct + fg3a + fg3m, data = tr_data)
+summary(fit)
+x = te_data[te_data$game_id == 0021400916,]
+predicted = predict(fit, newdata = x)
 
-predict(fit,newdata = te_data )
+rmse = sqrt(mean((te_data$pts - predicted)^2))
 
-predicted = predict(fit, newdata = te_data)
-
-conf_mtx = table(predicted, te_data$pt)
-
-plot(conf_mtx)
-
-mean(te_data$wl == predicted)
-
+plot_predict_actual(predicted ,te_data$pts, 5, title = "Predictions from Testing Data")
