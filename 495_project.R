@@ -342,7 +342,8 @@ total_teams$tov = as.numeric(levels(total_teams$tov))[total_teams$tov]
 total_teams$fg_pct = as.numeric(levels(total_teams$fg_pct))[total_teams$fg_pct]
 total_teams$ft_pct = as.numeric(levels(total_teams$ft_pct))[total_teams$ft_pct]
 total_teams$fg3_pct = as.numeric(levels(total_teams$fg3_pct))[total_teams$fg3_pct]
-
+total_teams$pf = as.numeric(levels(total_teams$pf))[total_teams$pf]
+total_teams$reb = as.numeric(levels(total_teams$reb))[total_teams$reb]
 
 set.seed(132)
 split = split_data(total_teams)
@@ -479,17 +480,49 @@ grid(nx = NULL, ny = NULL, col = "lightgray", lty = "dotted",
      lwd = par("lwd"), equilogs = TRUE)
 title("Precision recall curve")
 
+get_feactures = function(){
 # getting the total games a team has played agaist each other
-x = total_teams[total_teams$matchup == "CLE vs. ATL",]
+x = total_teams[total_teams$matchup == "GSW @ HOU" | total_teams$matchup == "GSW vs. HOU",]
+team_dat = x[sample(1:nrow(x), 170, replace = T),]
 
 
+x = lapply(team_dat[, c("pf", "reb", "fgm", "fga", "fg_pct", "fg3m", "fg3a", "fg3_pct", "ftm",  "fta", "ft_pct", "oreb", "dreb", "ast", "stl", "blk", "tov", "pts")], mean, na.rm = TRUE)
+
+y = head(team_dat, 1)
+
+y$fgm = round(x$fgm)
+y$fga = round(x$fga)
+y$fg_pct = x$fg_pct
+y$fg3m = round(x$fg3m)
+y$f3a = round(x$f3a)
+y$fg3_pct = fg3_pct
+y$ftm = round(x$ftm)
+y$fta = round(x$fta)
+y$ft_pct = x$ft_pct
+y$oreb = round(x$oreb)
+y$dreb = round(x$dreb)
+y$reb = round(x$reb)
+y$ast = round(x$ast)
+y$stl = round(x$stl)
+y$blk = round(x$blk)
+y$tov = round(x$tov)
+y$pts = round(x$pts)
+y$pf = round(x$pf)
+y$reb = round(x$reb)
+
+y
+
+}
 # when these teams play team one score is predicted 
 x = te_data[te_data$game_id == 21401071,]
-predicted4 = predict(fit, newdata = x)
+predicted4 = predict(fit, newdata = y)
 
 
 x1 = te_data[te_data$game_id == 21401071,]
 y = predict(fit3, newdata=x, type="response")
 predicts3 = as.numeric(y > 0.5)
+
+playerstat_W
+total_teams
 
 
