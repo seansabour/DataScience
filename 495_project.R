@@ -414,12 +414,10 @@ tr_data$wl = ifelse(tr_data$wl == "W", 1, 0 )
 fit3 = glm(wl ~ min + fgm + fga + fg_pct + fg3m + fg3a + fg3_pct + ftm + fta + ft_pct + reb + ast + stl + blk + tov + pf + pts, data = tr_data, family = binomial)
 
 
-fit3 = glm(wl ~ pts + ha  + fgm + stl + blk + ast + fg3_pct + fg3a + fg3m, data = tr_data, family = binomial)
+# fit3 = glm(wl ~ pts + ha  + fgm + stl + blk + ast + fg3_pct + fg3a + fg3m, data = tr_data, family = binomial)
 
 head(tr_data)
 summary(fit3)
-
-
 
 # compute confusion matrix
 y = predict(fit3, newdata=te_data, type="response")
@@ -438,3 +436,45 @@ hist(y[actuals3 == 0], main="Output when loss game",
      breaks=10, xlim=c(0,1), ylim=c(0,15), col="red4", xlab="model predictions")
 hist(y[actuals3 == 1], main="Output when won game", 
      breaks=10, xlim=c(0,1), ylim=c(0,15), col="red4", xlab="model predictions")
+
+prec_recall_summary = function(predicts, actuals) {
+  thresh = seq(0, 1, length.out=50)
+  prec_rec = data.frame()
+  actuals = factor(as.numeric(actuals))
+  for (th in thresh) {
+    predicts = factor(as.numeric(y >= th), levels=c("0","1"))
+    prec_rec = rbind(prec_rec, as.vector(table(predicts, actuals)))
+  }
+  names(prec_rec) = c("TN", "FP", "FN", "TP")
+  prec_rec$threshold = thresh
+  prec_rec$precision = prec_rec$TP/(prec_rec$TP + prec_rec$FP)
+  prec_rec$recall    = prec_rec$TP/(prec_rec$TP + prec_rec$FN)
+  prec_rec$false_pos = prec_rec$FP/(prec_rec$FP + prec_rec$TN)
+  return(prec_rec)
+}
+
+prec_rec1 = prec_recall_summary(predicts3, actuals3)
+
+par(mfrow=c(2,1))
+par(mar=c(4, 4, 2, 0.5))
+
+plot(prec_rec1$precision ~ prec_rec1$threshold, type = "l", col="blue", xlab="Threshold", ylab="Presiction")
+grid(nx = NULL, ny = NULL, col = "lightgray", lty = "dotted",
+     lwd = par("lwd"), equilogs = TRUE)
+plot(prec_rec1$recall ~ prec_rec1$threshold, type = "l", col = "red", xlab="Threshold", ylab="Recall")
+grid(nx = NULL, ny = NULL, col = "lightgray", lty = "dotted",
+     lwd = par("lwd"), equilogs = TRUE)
+
+
+par(mfrow=c(1,1))
+plot(prec_rec1$recall ~ prec_rec1$false_pos, type = "l", col = "red", xlab="Threshold", ylab="Recall")
+grid(nx = NULL, ny = NULL, col = "lightgray", lty = "dotted",
+     lwd = par("lwd"), equilogs = TRUE)
+
+title("receiver operating characteristic")
+
+par(mfrow=c(1,1))
+plot(prec_rec1$precision ~ prec_rec1$recall, type = "l", col = "red", xlab="precision", ylab="recall")
+grid(nx = NULL, ny = NULL, col = "lightgray", lty = "dotted",
+     lwd = par("lwd"), equilogs = TRUE)
+title("Precision recall curve")
