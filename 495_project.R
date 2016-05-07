@@ -478,3 +478,18 @@ plot(prec_rec1$precision ~ prec_rec1$recall, type = "l", col = "red", xlab="prec
 grid(nx = NULL, ny = NULL, col = "lightgray", lty = "dotted",
      lwd = par("lwd"), equilogs = TRUE)
 title("Precision recall curve")
+
+# getting the total games a team has played agaist each other
+x = total_teams[total_teams$matchup == "CLE vs. ATL",]
+
+
+# when these teams play team one score is predicted 
+x = te_data[te_data$game_id == 21401071,]
+predicted4 = predict(fit, newdata = x)
+
+
+x1 = te_data[te_data$game_id == 21401071,]
+y = predict(fit3, newdata=x, type="response")
+predicts3 = as.numeric(y > 0.5)
+
+
