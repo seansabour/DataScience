@@ -405,4 +405,36 @@ plot_predict_actual(predicted ,te_data$pts, 5, title = "Predictions from Testing
 plot_predict_actual(predicted2 ,te_data$pts, 5, title = "Predictions from Testing Data2")
 
 
+# ligistic regression
 
+te_data$wl = ifelse(te_data$wl == "W", 1, 0 )
+tr_data$wl = ifelse(tr_data$wl == "W", 1, 0 )
+
+# this fit works better than the latter
+fit3 = glm(wl ~ min + fgm + fga + fg_pct + fg3m + fg3a + fg3_pct + ftm + fta + ft_pct + reb + ast + stl + blk + tov + pf + pts, data = tr_data, family = binomial)
+
+
+fit3 = glm(wl ~ pts + ha  + fgm + stl + blk + ast + fg3_pct + fg3a + fg3m, data = tr_data, family = binomial)
+
+head(tr_data)
+summary(fit3)
+
+
+
+# compute confusion matrix
+y = predict(fit3, newdata=te_data, type="response")
+predicts3 = as.numeric(y > 0.5)
+actuals3 = te_data$wl
+conf_mtx3 = table(predicts3, actuals3)
+
+par(mfrow=c(1,1))
+print(conf_mtx3)
+plot(conf_mtx3, col="firebrick")
+
+succ_rate3 = mean(actuals3 == predicts3)
+
+par(mfrow=c(1,2))
+hist(y[actuals3 == 0], main="Output when loss game", 
+     breaks=10, xlim=c(0,1), ylim=c(0,15), col="red4", xlab="model predictions")
+hist(y[actuals3 == 1], main="Output when won game", 
+     breaks=10, xlim=c(0,1), ylim=c(0,15), col="red4", xlab="model predictions")
