@@ -480,22 +480,34 @@ grid(nx = NULL, ny = NULL, col = "lightgray", lty = "dotted",
      lwd = par("lwd"), equilogs = TRUE)
 title("Precision recall curve")
 
-get_feactures = function(){
-# getting the total games a team has played agaist each other
-x = total_teams[total_teams$matchup == "GSW @ HOU" | total_teams$matchup == "GSW vs. HOU",]
-team_dat = x[sample(1:nrow(x), 170, replace = T),]
 
+# function get feactures team1 is the primary team, team 2 is against
+get_feactures_v = function(team1, team2, total_teams){
+
+  # getting the total games a team has played agaist each other
+  x = total_teams[total_teams$matchup == paste(team1, "@", team2) | total_teams$matchup == paste(team1, "vs.", team2),]
+team_dat = x[sample(1:nrow(x), 100, replace = T),]
+
+x1 = grep(pattern= paste0(team2) ,total_teams$matchup) 
+x1 = total_teams[x1,]
+
+against_team = x1[sample(1:nrow(x1), 30, replace = T),]
+
+x = rbind(team_dat, against_team)
+
+# tail(x, 50)
 
 x = lapply(team_dat[, c("pf", "reb", "fgm", "fga", "fg_pct", "fg3m", "fg3a", "fg3_pct", "ftm",  "fta", "ft_pct", "oreb", "dreb", "ast", "stl", "blk", "tov", "pts")], mean, na.rm = TRUE)
 
 y = head(team_dat, 1)
 
+
 y$fgm = round(x$fgm)
 y$fga = round(x$fga)
 y$fg_pct = x$fg_pct
 y$fg3m = round(x$fg3m)
-y$f3a = round(x$f3a)
-y$fg3_pct = fg3_pct
+y$fg3a = round(x$fg3a)
+y$fg3_pct = x$fg3_pct
 y$ftm = round(x$ftm)
 y$fta = round(x$fta)
 y$ft_pct = x$ft_pct
@@ -510,19 +522,36 @@ y$pts = round(x$pts)
 y$pf = round(x$pf)
 y$reb = round(x$reb)
 
-y
+y$wl = ifelse(y$wl == "W", 1, 0 )
+y$team_id = 0
+y$game_id = 0
+y$game_date = 0
 
+y$matchup = as.character(y$matchup)
+
+y$matchup = paste(team1, "vs.", team2)
+
+return(y)
 }
+
+x = get_feactures_v("GSW", "HOU", total_teams)
+y = get_feactures_v("HOU", "GSW", total_teams)
+
 # when these teams play team one score is predicted 
-x = te_data[te_data$game_id == 21401071,]
-predicted4 = predict(fit, newdata = y)
+predicted4 = predict(fit, newdata = x)
+predicted5 = predict(fit, newdata = y)
+
+predicted4
+predicted5
 
 
-x1 = te_data[te_data$game_id == 21401071,]
-y = predict(fit3, newdata=x, type="response")
-predicts3 = as.numeric(y > 0.5)
+# i think the linear predicts is giving a warning because the feactures need to be turned back into factors
+predicted6 = predict(fit3, newdata=x, type="response")
+predicts6 = as.numeric(predicted6 > 0.5)
 
-playerstat_W
-total_teams
+predicted7 = predict(fit3, newdata=y, type="response")
+predicts7 = as.numeric(predicted7 > 0.5)
 
+predicts6
+predicts7
 
