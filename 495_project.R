@@ -6,8 +6,8 @@ library(rpart.plot)
 library(maptree)
 source("C:/Users/joshua/Downloads/lin-regr-util.R")
 
-source("/Users/seansabour/Desktop/School/CST495 Data Science/Homework/class-util.R")
-source("/Users/seansabour/Desktop/School/CST495 Data Science/Homework/lin-regr-util.R")
+# source("/Users/seansabour/Desktop/School/CST495 Data Science/Homework/class-util.R")
+# source("/Users/seansabour/Desktop/School/CST495 Data Science/Homework/lin-regr-util.R")
 
 nba_stats =  fromJSON("http://stats.nba.com/stats/leaguedashteamptshot?LeagueID=00&PerMode=Totals&Season=2014-15&SeasonType=Regular%20Season")
 nba_stats2 = fromJSON("http://stats.nba.com/stats/leaguedashplayerptshot?LeagueID=00&PerMode=Totals&Season=2014-15&SeasonType=Regular%20Season")
@@ -286,8 +286,6 @@ total_teams = rbind(playerstat_Hawks,
 )
 
 
-total_teams$ha 
-head(total_teams)
 names(total_teams) = tolower(names(total_teams))
 
 total_teams$wl = factor(total_teams$wl)
@@ -303,36 +301,53 @@ plot(total_teams$game_date)
 x = grep(pattern= "[@]",total_teams$matchup) 
 total_teams$ha[x] = '1'
 total_teams$ha[-x] = '0'
-total_teams$team_id = NULL
-total_teams$game_id = NULL
+#total_teams$team_id = NULL
+#total_teams$game_id = NULL
 
 #numerical
 
+# 
+# 
+# total_teams$pts = as.numeric(as.character(total_teams$pts))
+# total_teams$fgm = as.numeric(as.character(total_teams$fgm))
+# total_teams$fg3m = as.numeric(as.character(total_teams$fg3m))
+# total_teams$fga = as.numeric(as.character(total_teams$fga))
+# total_teams$fg3a = as.numeric(as.character(total_teams$fg3a))
+# total_teams$ftm = as.numeric(as.character(total_teams$ftm))
+# total_teams$fta = as.numeric(as.character(total_teams$fta))
+# total_teams$oreb = as.numeric(as.character(total_teams$oreb))
+# total_teams$dreb = as.numeric(as.character(total_teams$dreb))
+# total_teams$ast = as.numeric(as.character(total_teams$ast))
+# total_teams$stl = as.numeric(as.character(total_teams$stl))
+# total_teams$blk = as.numeric(as.character(total_teams$blk))
+# total_teams$tov = as.numeric(as.character(total_teams$tov))
+# total_teams$fg_pct = as.numeric(as.character(total_teams$fg_pct))
+# total_teams$ft_pct = as.numeric(as.character(total_teams$ft_pct))
+# total_teams$fg3_pct = as.numeric(as.character(total_teams$fg3_pct))
 
+total_teams$game_id = as.numeric(levels(total_teams$game_id))[total_teams$game_id]
+total_teams$pts = as.numeric(levels(total_teams$pts))[total_teams$pts]
+total_teams$fgm = as.numeric(levels(total_teams$fgm))[total_teams$fgm]
+total_teams$fg3m = as.numeric(levels(total_teams$fg3m))[total_teams$fg3m]
+total_teams$fga = as.numeric(levels(total_teams$fga))[total_teams$fga]
+total_teams$fg3a = as.numeric(levels(total_teams$fg3a))[total_teams$fg3a]
+total_teams$ftm = as.numeric(levels(total_teams$ftm))[total_teams$ftm]
+total_teams$fta = as.numeric(levels(total_teams$fta))[total_teams$fta]
+total_teams$oreb = as.numeric(levels(total_teams$oreb))[total_teams$oreb]
+total_teams$dreb = as.numeric(levels(total_teams$dreb))[total_teams$dreb]
+total_teams$ast = as.numeric(levels(total_teams$ast))[total_teams$ast]
+total_teams$stl = as.numeric(levels(total_teams$stl))[total_teams$stl]
+total_teams$blk = as.numeric(levels(total_teams$blk))[total_teams$blk]
+total_teams$tov = as.numeric(levels(total_teams$tov))[total_teams$tov]
+total_teams$fg_pct = as.numeric(levels(total_teams$fg_pct))[total_teams$fg_pct]
+total_teams$ft_pct = as.numeric(levels(total_teams$ft_pct))[total_teams$ft_pct]
+total_teams$fg3_pct = as.numeric(levels(total_teams$fg3_pct))[total_teams$fg3_pct]
 
-
-total_teams$pts = as.numeric(as.character(total_teams$pts))
-total_teams$fgm = as.numeric(as.character(total_teams$fgm))
-total_teams$fg3m = as.numeric(as.character(total_teams$fg3m))
-total_teams$fga = as.numeric(as.character(total_teams$fga))
-total_teams$fg3a = as.numeric(as.character(total_teams$fg3a))
-total_teams$ftm = as.numeric(as.character(total_teams$ftm))
-total_teams$fta = as.numeric(as.character(total_teams$fta))
-total_teams$oreb = as.numeric(as.character(total_teams$oreb))
-total_teams$dreb = as.numeric(as.character(total_teams$dreb))
-total_teams$ast = as.numeric(as.character(total_teams$ast))
-total_teams$stl = as.numeric(as.character(total_teams$stl))
-total_teams$blk = as.numeric(as.character(total_teams$blk))
-total_teams$tov = as.numeric(as.character(total_teams$tov))
-total_teams$fg_pct = as.numeric(as.character(total_teams$fg_pct))
-total_teams$ft_pct = as.numeric(as.character(total_teams$ft_pct))
-total_teams$fg3_pct = as.numeric(as.character(total_teams$fg3_pct))
 
 set.seed(132)
 split = split_data(total_teams)
 tr_data = split[[1]]
 te_data = split[[2]]
-
 
 head(total_teams)
 head(total_teams$matchup)
@@ -344,11 +359,50 @@ head(tr_data)
 head(total_teams, 1)
 
 fv = c("ha","fgm","fga","fg3m","fg3a","ftm","fta","oreb","dreb","ast","stl","blk","tov")
+# 
+# fit3 = lm(pts ~ fgm + oreb + dreb + reb + ast + stl + tov + pf, data = tr_data)
+# summary(fit3)
+# 
+# predicted = predict(fit3, newdata = te_data)
+# actual = te_data$pts
+# plot_predict_actual(predicted, actual, 2000, "Predictions from test data")
 
-fit3 = lm(pts ~ fgm + oreb + dreb + reb + ast + stl + tov + pf, data = tr_data)
-summary(fit3)
 
-predicted = predict(fit3, newdata = te_data)
-actual = te_data$pts
-plot_predict_actual(predicted, actual, 2000, "Predictions from test data")
+# fv = c("ha","fgm","fga","fg3m","fg3a","ftm","fta","oreb","dreb","ast","stl","blk","tov")
+
+plot(~ ha  + fgm + stl + blk + ast + fg3_pct + fg3a + fg3m, data = tr_data)
+plot(total_teams$fg_pct ~ total_teams$team_id, col=c("firebrick"))
+plot(total_teams$fg3_pct ~ total_teams$team_id, col=c("firebrick"), las=2)
+plot(total_teams$pf ~ total_teams$team_id, col=c("firebrick"), las=2)
+plot(total_teams$pts ~ total_teams$team_id, col=c("firebrick"), las=2)
+plot(total_teams$fg3m ~ total_teams$fg3_pct, col=c("firebrick", "blue"), pch=16)
+plot(total_teams$fgm ~ total_teams$ast, col=c("firebrick", "blue"), pch=16)
+plot(total_teams$fgm, total_teams$ast, col=c("firebrick", "blue"), pch=16)
+plot(total_teams$fg3a ~ total_teams$fg3m, col=c("firebrick", "blue"), pch=16)
+
+
+fit = lm(pts ~ ha  + fgm + stl + blk + ast + fg3_pct + fg3a + fg3m, data = tr_data)
+fit2 = lm(pts ~ pf + fg3m + fgm + fg3a + ast, data = tr_data)
+
+summary(fit)
+summary(fit2)
+
+# x = te_data[te_data$game_id == 0021400916,]
+# predicted = predict(fit, newdata = x)
+
+
+predicted = predict(fit, newdata = te_data)
+predicted2 = predict(fit2, newdata = te_data)
+
+rmse = sqrt(mean((te_data$pts - predicted)^2))
+rmse2 = sqrt(mean((te_data$pts - predicted2)^2))
+
+rmse
+rmse2
+
+par(mfrow=c(2,1))
+plot_predict_actual(predicted ,te_data$pts, 5, title = "Predictions from Testing Data")
+plot_predict_actual(predicted2 ,te_data$pts, 5, title = "Predictions from Testing Data2")
+
+
 
