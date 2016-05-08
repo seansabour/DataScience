@@ -345,7 +345,7 @@ total_teams$fg3_pct = as.numeric(levels(total_teams$fg3_pct))[total_teams$fg3_pc
 total_teams$pf = as.numeric(levels(total_teams$pf))[total_teams$pf]
 total_teams$reb = as.numeric(levels(total_teams$reb))[total_teams$reb]
 
-set.seed(132)
+# set.seed(132)
 split = split_data(total_teams)
 tr_data = split[[1]]
 te_data = split[[2]]
@@ -410,6 +410,8 @@ plot_predict_actual(predicted2 ,te_data$pts, 5, title = "Predictions from Testin
 
 te_data$wl = ifelse(te_data$wl == "W", 1, 0 )
 tr_data$wl = ifelse(tr_data$wl == "W", 1, 0 )
+
+
 
 # this fit works better than the latter
 fit3 = glm(wl ~ min + fgm + fga + fg_pct + fg3m + fg3a + fg3_pct + ftm + fta + ft_pct + reb + ast + stl + blk + tov + pf + pts, data = tr_data, family = binomial)
@@ -486,12 +488,12 @@ get_feactures_v = function(team1, team2, total_teams){
 
   # getting the total games a team has played agaist each other
   x = total_teams[total_teams$matchup == paste(team1, "@", team2) | total_teams$matchup == paste(team1, "vs.", team2),]
-team_dat = x[sample(1:nrow(x), 100, replace = T),]
+team_dat = x[sample(1:nrow(x), 50, replace = T),]
 
 x1 = grep(pattern= paste0(team2) ,total_teams$matchup) 
 x1 = total_teams[x1,]
 
-against_team = x1[sample(1:nrow(x1), 30, replace = T),]
+against_team = x1[sample(1:nrow(x1), 10, replace = T),]
 
 x = rbind(team_dat, against_team)
 
@@ -534,18 +536,57 @@ y$matchup = paste(team1, "vs.", team2)
 return(y)
 }
 
-x = get_feactures_v("GSW", "HOU", total_teams)
-y = get_feactures_v("HOU", "GSW", total_teams)
 
-# when these teams play team one score is predicted 
+# this method plays the games for each team. The features need to be fixed. read error message when running.
+play_games = function(team1, team2, total_teams, fit_r, fit_l){
+team1_w = NULL
+team2_w = NULL
+team1_s = NULL
+team2_s = NULL
+
+  for(i in 1:7)
+  {
+     x = get_feactures_v(team1, team2, total_teams)
+     y = get_feactures_v(team2, team1, total_teams)
+  
+     # when these teams play team one score is predicted 
+     predicted4 = predict(fit_r, newdata = x)
+     predicted5 = predict(fit_r, newdata = y)
+     
+      predicted6 = predict(fit_l, newdata=x, type="response")
+      predicts6 = as.numeric(predicted6 > 0.5)
+      
+      predicted7 = predict(fit_l, newdata=y, type="response")
+      predicts7 = as.numeric(predicted7 > 0.5)   
+     
+      team1_w = c(team1_w, predicts6)
+      team2_w = c(team2_w, predicts7)
+     team1_s = c(team1_s, predicted4)
+     team2_s = c(team2_s, predicted5)
+     print(i)
+      if(sum(team1_w) == 4 | sum(team2_w) == 4){
+        break
+      }
+  }
+
+   team1_w = sum(team1_w)
+   team2_w = sum(team2_w)
+  
+  print(team1_w)
+  print(team2_w)
+  print(team1_s)
+  print(team2_s)
+
+}
+
+# perameter one is team, 2 agaist, 3 regresstion, 4 list ligistic model
+play_games("LAC", "POR", total_teams, fit, fit3)
+
+total_teams[total_teams$matchup == paste(team1, "@", team2) | total_teams$matchup == paste(team1, "vs.", team2),]
+# i think the linear predicts is giving a warning because the feactures need to be turned back into factors
 predicted4 = predict(fit, newdata = x)
 predicted5 = predict(fit, newdata = y)
 
-predicted4
-predicted5
-
-
-# i think the linear predicts is giving a warning because the feactures need to be turned back into factors
 predicted6 = predict(fit3, newdata=x, type="response")
 predicts6 = as.numeric(predicted6 > 0.5)
 
