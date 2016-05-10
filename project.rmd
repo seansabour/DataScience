@@ -557,7 +557,7 @@ plot(total_teams$fgm, total_teams$ast, col=c("firebrick", "blue"), pch=16)
 plot(total_teams$fg3a ~ total_teams$fg3m, col=c("firebrick", "blue"), pch=16)
 
 
- fit = lm(pts ~ ha  + fgm + stl + blk + ast + fg3_pct + fg3a + fg3m, data = tr_data)
+ fit = lm(pts ~ ha  + reb + stl + blk, data = tr_data)
 # fit = lm(pts ~ pf + fg3m + fgm + fg3a + ast, data = tr_data)
 
 summary(fit)
@@ -736,11 +736,13 @@ team2_s = NULL
       predicted7 = predict(fit_l, newdata=y, type="response")
       predicts7 = as.numeric(predicted7 > 0.5)   
     
-      if(predicts6 == 0){
-        predicts7 = 1
+      if(predicted4 >  predicted5){
+        predicts6 = 1
+        predicts7 = 0
       }
       else{
-        predicts7 = 0
+        predicts6 = 0
+        predicts7 = 1
       }
       
     team1_w = c(team1_w, predicts6)
@@ -767,7 +769,7 @@ team2_s = NULL
 }
 total_teams$wl = ifelse(total_teams$wl == "W", 1, 0)
 # perameter one is team, 2 agaist, 3 regresstion, 4 list ligistic model
-play_games("OKC", "DAL", total_teams, fit, fit3)
+play_games("GSW", "POR", total_teams, fit, fit3)
 
 
 # total_teams[total_teams$matchup == paste(team1, "@", team2) | total_teams$matchup == paste(team1, "vs.", team2),]
