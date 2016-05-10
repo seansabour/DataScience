@@ -5,8 +5,7 @@ date: "May 9, 2016"
 output: html_document
 ---
 
-
-```{r}
+```{r,echo=FALSE}
 library(jsonlite)
 library(curl)
 library(e1071)
@@ -20,31 +19,16 @@ library(maptree)
 ```
 
 #Data Acquisition 
-```{r}
-nba_stats =  fromJSON("http://stats.nba.com/stats/leaguedashteamptshot?LeagueID=00&PerMode=Totals&Season=2014-15&SeasonType=Regular%20Season")
-nba_stats2 = fromJSON("http://stats.nba.com/stats/leaguedashplayerptshot?LeagueID=00&PerMode=Totals&Season=2014-15&SeasonType=Regular%20Season")
-nba_stats4 = fromJSON("http://stats.nba.com/stats/teamyearbyyearstats?TeamID=1610612746&LeagueId=00&SeasonType=Regular%20Season&perMode=Totals")
+```{r,echo=FALSE}
+player = fromJSON("http://stats.nba.com/stats/leaguedashplayerptshot?LeagueID=00&PerMode=Totals&Season=2014-15&SeasonType=Regular%20Season")
 nba_stats_playoffs = fromJSON("http://stats.nba.com/stats/leaguedashteamptshot?LeagueID=00&PerMode=Totals&Season=2014-15&SeasonType=Playoffs")
 
 teamstat_playoffs = data.frame(nba_stats_playoffs$resultSets$rowSet[1])
 colnames(teamstat_playoffs) <- nba_stats_playoffs$resultSets$headers[[1]]
 
-teamstat = data.frame(nba_stats$resultSets$rowSet[1])
-colnames(teamstat) <- nba_stats$resultSets$headers[[1]]
 
-teamstat4 = data.frame(nba_stats4$resultSets$rowSet[1])
-colnames(teamstat4) <- nba_stats4$resultSets$headers[[1]]
-
-nba_stats$resultSets$headers
-nba_stats$resultSets$rowSet
-
-teamstat = data.frame(nba_stats$resultSets$rowSet[1])
-colnames(teamstat) <- nba_stats$resultSets$headers[[1]]
-nba_stats2$resultSets$headers
-nba_stats2$resultSets$rowSet
-
-player = data.frame(nba_stats2$resultSets$rowSet[1])
-colnames(player) <- nba_stats2$resultSets$headers[[1]]
+player_stats = data.frame(player$resultSets$rowSet[1])
+colnames(player_stats) <- player$resultSets$headers[[1]]
 
 
 
@@ -177,96 +161,211 @@ colnames(playerstat_Wizards) <- nba_stats_Wizards$resultSets$headers[[1]]
 
 
 # Adding team name column
+playerstat_Hawks$team_name = "hawks"
+playerstat_Celtics$team_name = "celtics"
+playerstat_Nets$team_name = "nets"
+playerstat_Hornets$team_name = "hornets"
+playerstat_Bulls$team_name = "bulls"
+playerstat_Cavaliers$team_name = "cavaliers"
+playerstat_Mavericks$team_name = "mavericks"
+playerstat_Nuggets$team_name = "nuggets"
+playerstat_Pistons$team_name = "pistons"
+playerstat_Warriors$team_name = "warriors"
+playerstat_Rockets$team_name = "rockets"
+playerstat_Pacers$team_name = "pacers"
+playerstat_Clippers$team_name = "clippers"
+playerstat_Lakers$team_name = "lakers"
+playerstat_Grizzlies$team_name = "grizzlies"
+playerstat_Heat$team_name = "heat"
+playerstat_Bucks$team_name = "bucks"
+playerstat_Timberwolves$team_name = "timberwolves"
+playerstat_Pelicans$team_name = "pelicans"
+playerstat_Knicks$team_name = "knicks"
+playerstat_Thunder$team_name = "thunder"
+playerstat_Magic$team_name = "magic"
+playerstat_76ers$team_name = "sixers"
+playerstat_Suns$team_name = "suns"
+playerstat_Blazers$team_name = "blazers"
+playerstat_Kings$team_name = "kings"
+playerstat_Spurs$team_name = "spurs"
+playerstat_Raptors$team_name = "raptors"
+playerstat_Jazz$team_name = "jazz"
+playerstat_Wizards$team_name = "wizards"
 
-hawks = replicate(nrow(playerstat_Hawks), c("hawks"))
-playerstat_Hawks$team_name = hawks
+# 
+hawks_stats = fromJSON("http://stats.nba.com/stats/teamyearbyyearstats?TeamID=1610612737&LeagueId=00&SeasonType=Regular%20Season&perMode=Totals")
+celtics_stats = fromJSON("http://stats.nba.com/stats/teamyearbyyearstats?TeamID=1610612738&LeagueId=00&SeasonType=Regular%20Season&perMode=Totals")
+nets_stats = fromJSON("http://stats.nba.com/stats/teamyearbyyearstats?TeamID=1610612751&LeagueId=00&SeasonType=Regular%20Season&perMode=Totals")
+hornets_stats = fromJSON("http://stats.nba.com/stats/teamyearbyyearstats?TeamID=1610612766&LeagueId=00&SeasonType=Regular%20Season&perMode=Totals")
+bulls_stats = fromJSON("http://stats.nba.com/stats/teamyearbyyearstats?TeamID=1610612741&LeagueId=00&SeasonType=Regular%20Season&perMode=Totals")
+cavaliers_stats = fromJSON("http://stats.nba.com/stats/teamyearbyyearstats?TeamID=1610612739&LeagueId=00&SeasonType=Regular%20Season&perMode=Totals")
+mavericks_stats = fromJSON("http://stats.nba.com/stats/teamyearbyyearstats?TeamID=1610612742&LeagueId=00&SeasonType=Regular%20Season&perMode=Totals")
+nuggets_stats = fromJSON("http://stats.nba.com/stats/teamyearbyyearstats?TeamID=1610612743&LeagueId=00&SeasonType=Regular%20Season&perMode=Totals")
+pistons_stats = fromJSON("http://stats.nba.com/stats/teamyearbyyearstats?TeamID=1610612765&LeagueId=00&SeasonType=Regular%20Season&perMode=Totals")
+warriors_stats = fromJSON("http://stats.nba.com/stats/teamyearbyyearstats?TeamID=1610612744&LeagueId=00&SeasonType=Regular%20Season&perMode=Totals")
+rockets_stats = fromJSON("http://stats.nba.com/stats/teamyearbyyearstats?TeamID=1610612745&LeagueId=00&SeasonType=Regular%20Season&perMode=Totals")
+pacers_stats = fromJSON("http://stats.nba.com/stats/teamyearbyyearstats?TeamID=1610612754&LeagueId=00&SeasonType=Regular%20Season&perMode=Totals")
+clippers_stats = fromJSON("http://stats.nba.com/stats/teamyearbyyearstats?TeamID=1610612746&LeagueId=00&SeasonType=Regular%20Season&perMode=Totals")
+lakers_stats = fromJSON("http://stats.nba.com/stats/teamyearbyyearstats?TeamID=1610612747&LeagueId=00&SeasonType=Regular%20Season&perMode=Totals")
+grizzlies_stats = fromJSON("http://stats.nba.com/stats/teamyearbyyearstats?TeamID=1610612763&LeagueId=00&SeasonType=Regular%20Season&perMode=Totals")
+heat_stats = fromJSON("http://stats.nba.com/stats/teamyearbyyearstats?TeamID=1610612748&LeagueId=00&SeasonType=Regular%20Season&perMode=Totals")
+bucks_stats = fromJSON("http://stats.nba.com/stats/teamyearbyyearstats?TeamID=1610612749&LeagueId=00&SeasonType=Regular%20Season&perMode=Totals")
+timberwolves_stats = fromJSON("http://stats.nba.com/stats/teamyearbyyearstats?TeamID=1610612750&LeagueId=00&SeasonType=Regular%20Season&perMode=Totals")
+pelicans_stats = fromJSON("http://stats.nba.com/stats/teamyearbyyearstats?TeamID=1610612740&LeagueId=00&SeasonType=Regular%20Season&perMode=Totals")
+knicks_stats = fromJSON("http://stats.nba.com/stats/teamyearbyyearstats?TeamID=1610612752&LeagueId=00&SeasonType=Regular%20Season&perMode=Totals")
+thunder_stats = fromJSON("http://stats.nba.com/stats/teamyearbyyearstats?TeamID=1610612760&LeagueId=00&SeasonType=Regular%20Season&perMode=Totals")
+magic_stats = fromJSON("http://stats.nba.com/stats/teamyearbyyearstats?TeamID=1610612753&LeagueId=00&SeasonType=Regular%20Season&perMode=Totals")
+sixers_stats = fromJSON("http://stats.nba.com/stats/teamyearbyyearstats?TeamID=1610612755&LeagueId=00&SeasonType=Regular%20Season&perMode=Totals")
+suns_stats = fromJSON("http://stats.nba.com/stats/teamyearbyyearstats?TeamID=1610612756&LeagueId=00&SeasonType=Regular%20Season&perMode=Totals")
+blazers_stats = fromJSON("http://stats.nba.com/stats/teamyearbyyearstats?TeamID=1610612757&LeagueId=00&SeasonType=Regular%20Season&perMode=Totals")
+kings_stats = fromJSON("http://stats.nba.com/stats/teamyearbyyearstats?TeamID=1610612758&LeagueId=00&SeasonType=Regular%20Season&perMode=Totals")
+spurs_stats = fromJSON("http://stats.nba.com/stats/teamyearbyyearstats?TeamID=1610612759&LeagueId=00&SeasonType=Regular%20Season&perMode=Totals")
+raptors_stats = fromJSON("http://stats.nba.com/stats/teamyearbyyearstats?TeamID=1610612761&LeagueId=00&SeasonType=Regular%20Season&perMode=Totals")
+jazz_stats = fromJSON("http://stats.nba.com/stats/teamyearbyyearstats?TeamID=1610612762&LeagueId=00&SeasonType=Regular%20Season&perMode=Totals")
+wizards_stats = fromJSON("http://stats.nba.com/stats/teamyearbyyearstats?TeamID=1610612764&LeagueId=00&SeasonType=Regular%20Season&perMode=Totals")
 
-celtics = replicate(nrow(playerstat_Celtics), c("celtics"))
-playerstat_Celtics$team_name = celtics
+# Franchise Stats
+Hawks = data.frame(hawks_stats$resultSets$rowSet[1])
+colnames(Hawks) <- hawks_stats$resultSets$headers[[1]]
 
-nets = replicate(nrow(playerstat_Nets), c("nets"))
-playerstat_Nets$team_name = nets
+Celtics = data.frame(celtics_stats$resultSets$rowSet[1])
+colnames(Celtics) <- celtics_stats$resultSets$headers[[1]]
 
-hornets = replicate(nrow(playerstat_Hornets), c("hornets"))
-playerstat_Hornets$team_name = hornets
+Nets = data.frame(nets_stats$resultSets$rowSet[1])
+colnames(Nets) <- nets_stats$resultSets$headers[[1]]
 
-bulls = replicate(nrow(playerstat_Bulls), c("bulls"))
-playerstat_Bulls$team_name = bulls
+Hornets = data.frame(hornets_stats$resultSets$rowSet[1])
+colnames(Hornets) <- hornets_stats$resultSets$headers[[1]]
 
-cavaliers = replicate(nrow(playerstat_Cavaliers), c("cavaliers"))
-playerstat_Cavaliers$team_name = cavaliers
+Bulls = data.frame(bulls_stats$resultSets$rowSet[1])
+colnames(Bulls) <- bulls_stats$resultSets$headers[[1]]
 
-mavericks = replicate(nrow(playerstat_Mavericks), c("mavericks"))
-playerstat_Mavericks$team_name = mavericks
+Cavaliers = data.frame(cavaliers_stats$resultSets$rowSet[1])
+colnames(Cavaliers) <- cavaliers_stats$resultSets$headers[[1]]
 
-nuggets = replicate(nrow(playerstat_Nuggets), c("nuggets"))
-playerstat_Nuggets$team_name = nuggets
+Mavericks = data.frame(mavericks_stats$resultSets$rowSet[1])
+colnames(Mavericks) <- mavericks_stats$resultSets$headers[[1]]
 
-pistons = replicate(nrow(playerstat_Pistons), c("pistons"))
-playerstat_Pistons$team_name = pistons
+Nuggets = data.frame(nuggets_stats$resultSets$rowSet[1])
+colnames(Nuggets) <- nuggets_stats$resultSets$headers[[1]]
 
-warriors = replicate(nrow(playerstat_Warriors), c("warriors"))
-playerstat_Warriors$team_name = warriors
+Pistons = data.frame(pistons_stats$resultSets$rowSet[1])
+colnames(Pistons) <- pistons_stats$resultSets$headers[[1]]
 
-rockets = replicate(nrow(playerstat_Rockets), c("rockets"))
-playerstat_Rockets$team_name = rockets
+Warriors = data.frame(warriors_stats$resultSets$rowSet[1])
+colnames(Warriors) <- warriors_stats$resultSets$headers[[1]]
 
-pacers = replicate(nrow(playerstat_Pacers), c("pacers"))
-playerstat_Pacers$team_name = pacers
+Rockets = data.frame(rockets_stats$resultSets$rowSet[1])
+colnames(Rockets) <- rockets_stats$resultSets$headers[[1]]
 
-clippers = replicate(nrow(playerstat_Clippers), c("clippers"))
-playerstat_Clippers$team_name = clippers
+Pacers = data.frame(pacers_stats$resultSets$rowSet[1])
+colnames(Pacers) <- pacers_stats$resultSets$headers[[1]]
 
-lakers = replicate(nrow(playerstat_Lakers), c("lakers"))
-playerstat_Lakers$team_name = lakers
+Clippers = data.frame(clippers_stats$resultSets$rowSet[1])
+colnames(Clippers) <- clippers_stats$resultSets$headers[[1]]
 
-grizzlies = replicate(nrow(playerstat_Grizzlies), c("grizzlies"))
-playerstat_Grizzlies$team_name = grizzlies
+Lakers = data.frame(lakers_stats$resultSets$rowSet[1])
+colnames(Lakers) <- lakers_stats$resultSets$headers[[1]]
 
-heat = replicate(nrow(playerstat_Heat), c("heat"))
-playerstat_Heat$team_name = heat
+Grizzlies = data.frame(grizzlies_stats$resultSets$rowSet[1])
+colnames(Grizzlies) <- grizzlies_stats$resultSets$headers[[1]]
 
-bucks = replicate(nrow(playerstat_Bucks), c("bucks"))
-playerstat_Bucks$team_name = bucks
+Heat = data.frame(heat_stats$resultSets$rowSet[1])
+colnames(Heat) <- heat_stats$resultSets$headers[[1]]
 
-timberwolves = replicate(nrow(playerstat_Timberwolves), c("timberwolves"))
-playerstat_Timberwolves$team_name = timberwolves
+Bucks = data.frame(bucks_stats$resultSets$rowSet[1])
+colnames(Bucks) <- bucks_stats$resultSets$headers[[1]]
 
-pelicans = replicate(nrow(playerstat_Pelicans), c("pelicans"))
-playerstat_Pelicans$team_name = pelicans
+Timberwolves = data.frame(timberwolves_stats$resultSets$rowSet[1])
+colnames(Timberwolves) <- timberwolves_stats$resultSets$headers[[1]]
 
-knicks = replicate(nrow(playerstat_Knicks), c("knicks"))
-playerstat_Knicks$team_name = knicks
+Pelicans = data.frame(pelicans_stats$resultSets$rowSet[1])
+colnames(Pelicans) <- pelicans_stats$resultSets$headers[[1]]
 
-thunder = replicate(nrow(playerstat_Thunder), c("thunder"))
-playerstat_Thunder$team_name = thunder
+Knicks = data.frame(knicks_stats$resultSets$rowSet[1])
+colnames(Knicks) <- knicks_stats$resultSets$headers[[1]]
 
-magic = replicate(nrow(playerstat_Magic), c("magic"))
-playerstat_Magic$team_name = magic
+Thunder = data.frame(thunder_stats$resultSets$rowSet[1])
+colnames(Thunder) <- thunder_stats$resultSets$headers[[1]]
 
-p.76ers = replicate(nrow(playerstat_76ers), c("76ers"))
-playerstat_76ers$team_name = p.76ers
+Magic = data.frame(magic_stats$resultSets$rowSet[1])
+colnames(Magic) <- magic_stats$resultSets$headers[[1]]
 
-suns = replicate(nrow(playerstat_Suns), c("suns"))
-playerstat_Suns$team_name = suns
+Sixers = data.frame(sixers_stats$resultSets$rowSet[1])
+colnames(Sixers) <- sixers_stats$resultSets$headers[[1]]
 
-blazers = replicate(nrow(playerstat_Blazers), c("blazers"))
-playerstat_Blazers$team_name = blazers
+Suns = data.frame(suns_stats$resultSets$rowSet[1])
+colnames(Suns) <- suns_stats$resultSets$headers[[1]]
 
-kings = replicate(nrow(playerstat_Kings), c("kings"))
-playerstat_Kings$team_name = kings
+Blazers = data.frame(blazers_stats$resultSets$rowSet[1])
+colnames(Blazers) <- blazers_stats$resultSets$headers[[1]]
 
-spurs = replicate(nrow(playerstat_Spurs), c("spurs"))
-playerstat_Spurs$team_name = spurs
+Kings = data.frame(kings_stats$resultSets$rowSet[1])
+colnames(Kings) <- kings_stats$resultSets$headers[[1]]
 
-raptors = replicate(nrow(playerstat_Raptors), c("raptors"))
-playerstat_Raptors$team_name = raptors
+Spurs = data.frame(spurs_stats$resultSets$rowSet[1])
+colnames(Spurs) <- spurs_stats$resultSets$headers[[1]]
 
-jazz = replicate(nrow(playerstat_Jazz), c("jazz"))
-playerstat_Jazz$team_name = jazz
+Raptors = data.frame(raptors_stats$resultSets$rowSet[1])
+colnames(Raptors) <- raptors_stats$resultSets$headers[[1]]
 
-wizards = replicate(nrow(playerstat_Wizards), c("wizards"))
-playerstat_Wizards$team_name = wizards
+Jazz = data.frame(jazz_stats$resultSets$rowSet[1])
+colnames(Jazz) <- jazz_stats$resultSets$headers[[1]]
+
+Wizards = data.frame(wizards_stats$resultSets$rowSet[1])
+colnames(Wizards) <- wizards_stats$resultSets$headers[[1]]
+
+Hawks$NBA_FINALS_APPEARANCE = 4
+Celtics$NBA_FINALS_APPEARANCE = 21
+Nets$NBA_FINALS_APPEARANCE = 2
+Hornets$NBA_FINALS_APPEARANCE = 0
+Bulls$NBA_FINALS_APPEARANCE = 6
+Cavaliers$NBA_FINALS_APPEARANCE = 2
+Mavericks$NBA_FINALS_APPEARANCE = 2
+Nuggets$NBA_FINALS_APPEARANCE = 0
+Pistons$NBA_FINALS_APPEARANCE = 7
+Warriors$NBA_FINALS_APPEARANCE = 7
+Rockets$NBA_FINALS_APPEARANCE = 4
+Pacers$NBA_FINALS_APPEARANCE = 1
+Clippers$NBA_FINALS_APPEARANCE = 0
+Lakers$NBA_FINALS_APPEARANCE = 31
+Grizzlies$NBA_FINALS_APPEARANCE = 0
+Heat$NBA_FINALS_APPEARANCE = 4
+Bucks$NBA_FINALS_APPEARANCE = 2
+Timberwolves$NBA_FINALS_APPEARANCE = 0
+Pelicans$NBA_FINALS_APPEARANCE = 0
+Knicks$NBA_FINALS_APPEARANCE = 8
+Thunder$NBA_FINALS_APPEARANCE = 1
+Magic$NBA_FINALS_APPEARANCE = 2
+Sixers$NBA_FINALS_APPEARANCE = 9
+Suns$NBA_FINALS_APPEARANCE = 2
+Blazers$NBA_FINALS_APPEARANCE = 3
+Kings$NBA_FINALS_APPEARANCE = 1
+Spurs$NBA_FINALS_APPEARANCE = 6
+Raptors$NBA_FINALS_APPEARANCE = 0
+Jazz$NBA_FINALS_APPEARANCE = 2
+Wizards$NBA_FINALS_APPEARANCE = 4
+
+teams = list( Hawks[Hawks$YEAR == "2015-16", ], Celtics[Celtics$YEAR == "2015-16", ],
+              Nets[Nets$YEAR == "2015-16", ], Hornets[Hornets$YEAR == "2015-16", ], 
+              Bulls[Bulls$YEAR == "2015-16", ], Cavaliers[Cavaliers$YEAR == "2015-16", ],
+              Mavericks[Mavericks$YEAR == "2015-16", ], Nuggets[Nuggets$YEAR == "2015-16", ],
+              Pistons[Pistons$YEAR == "2015-16", ], Warriors[Warriors$YEAR == "2015-16", ],
+              Rockets[Rockets$YEAR == "2015-16", ], Pacers[Pacers$YEAR == "2015-16", ],
+              Clippers[Clippers$YEAR == "2015-16", ], Lakers[Lakers$YEAR == "2015-16", ],
+              Grizzlies[Grizzlies$YEAR == "2015-16", ], Heat[Heat$YEAR == "2015-16", ],
+              Bucks[Bucks$YEAR == "2015-16", ], Timberwolves[Timberwolves$YEAR == "2015-16", ],
+              Pelicans[Pelicans$YEAR == "2015-16", ], Knicks[Knicks$YEAR == "2015-16", ],
+              Thunder[Thunder$YEAR == "2015-16", ], Magic[Magic$YEAR == "2015-16", ],
+              Sixers[Sixers$YEAR == "2015-16", ], Suns[Suns$YEAR == "2015-16", ],
+              Blazers[Blazers$YEAR == "2015-16", ], Kings[Kings$YEAR == "2015-16", ],
+              Spurs[Spurs$YEAR == "2015-16", ], Raptors[Raptors$YEAR == "2015-16", ], 
+              Jazz[Jazz$YEAR == "2015-16", ], Wizards[Wizards$YEAR == "2015-16", ])
+
+
+
+team_season_stats = Reduce(function(...) merge(..., all=TRUE), teams)
+
 
 ```
 
@@ -308,15 +407,13 @@ total_teams = rbind(playerstat_Hawks,
 
 names(total_teams) = tolower(names(total_teams))
 
-total_teams$wl = factor(total_teams$wl)
-
-total_teams$ha = sample(1, nrow(total_teams), replace = T)
+#total_teams$away = sample(1, nrow(total_teams), replace = T)
 
 x = grep(pattern= "[@]",total_teams$matchup) 
-total_teams$ha[x] = '1'
-total_teams$ha[-x] = '0'
+total_teams$away[x] = 1
+total_teams$away[-x] = 0
 
-
+total_teams$game_date = sort(as.Date(total_teams$game_date,format = "%b %d, %Y"))
 total_teams$game_id = as.numeric(levels(total_teams$game_id))[total_teams$game_id]
 total_teams$pts = as.numeric(levels(total_teams$pts))[total_teams$pts]
 total_teams$fgm = as.numeric(levels(total_teams$fgm))[total_teams$fgm]
@@ -336,7 +433,68 @@ total_teams$ft_pct = as.numeric(levels(total_teams$ft_pct))[total_teams$ft_pct]
 total_teams$fg3_pct = as.numeric(levels(total_teams$fg3_pct))[total_teams$fg3_pct]
 total_teams$pf = as.numeric(levels(total_teams$pf))[total_teams$pf]
 total_teams$reb = as.numeric(levels(total_teams$reb))[total_teams$reb]
+total_teams$min = as.numeric(levels(total_teams$min))[total_teams$min]
+
+
+team_season_stats$WIN_PCT =  as.numeric(levels(team_season_stats$WIN_PCT))[team_season_stats$WIN_PCT]
+team_season_stats$PTS_RANK =  as.numeric(levels(team_season_stats$PTS_RANK))[team_season_stats$PTS_RANK]
+team_season_stats$FG3_PCT =  as.numeric(levels(team_season_stats$FG3_PCT))[team_season_stats$FG3_PCT]
+team_season_stats$FG3A =  as.numeric(levels(team_season_stats$FG3A))[team_season_stats$FG3A]
+team_season_stats$FG3M =  as.numeric(levels(team_season_stats$FG3M))[team_season_stats$FG3M]
+team_season_stats$FG_PCT =  as.numeric(levels(team_season_stats$FG_PCT))[team_season_stats$FG_PCT]
+team_season_stats$FGA =  as.numeric(levels(team_season_stats$FGA))[team_season_stats$FTA]
+team_season_stats$FGM =  as.numeric(levels(team_season_stats$FGM))[team_season_stats$FTM]
+team_season_stats$FT_PCT =  as.numeric(levels(team_season_stats$FT_PCT))[team_season_stats$FT_PCT]
+team_season_stats$FTA =  as.numeric(levels(team_season_stats$FTA))[team_season_stats$FTA]
+team_season_stats$FTM =  as.numeric(levels(team_season_stats$FTM))[team_season_stats$FTM]
+team_season_stats$OREB =  as.numeric(levels(team_season_stats$OREB))[team_season_stats$OREB]
+team_season_stats$DREB =  as.numeric(levels(team_season_stats$DREB))[team_season_stats$DREB]
+team_season_stats$REB =  as.numeric(levels(team_season_stats$REB))[team_season_stats$REB]
+team_season_stats$AST =  as.numeric(levels(team_season_stats$AST))[team_season_stats$AST]
+team_season_stats$PF =  as.numeric(levels(team_season_stats$PF))[team_season_stats$PF]
+team_season_stats$STL =  as.numeric(levels(team_season_stats$STL))[team_season_stats$STL]
+team_season_stats$BLK =  as.numeric(levels(team_season_stats$BLK))[team_season_stats$BLK]
+team_season_stats$PTS =  as.numeric(levels(team_season_stats$PTS))[team_season_stats$PTS]
 ```
+
+
+#Data Exploration
+```{r}
+## Plot Points Rank vs Win %
+par(mfrow=c(1,1))
+plot(team_season_stats$PTS_RANK ~ team_season_stats$WIN_PCT,xlim=c(0,1),ylim=c(0,32),col="dodgerblue",pch=16,xlab="Win Ratio",ylab="Points Ranking",main="Points Ranking vs Win Ratio")
+text(team_season_stats$PTS_RANK ~ team_season_stats$WIN_PCT ,labels=team_season_stats$TEAM_NAME, cex= 0.5, pos=3)
+abline(v=mean(team_season_stats$WIN_PCT))
+
+##PLOTS Finals Appearances vs Current Win %
+plot(team_season_stats$NBA_FINALS_APPEARANCE ~ team_season_stats$WIN_PCT,xlim=c(0,1),ylim=c(0,32),col="dodgerblue",pch=16,xlab="Win Ratio",ylab="Finals Appearances",main="Finals Appearances vs. Current Win Ratio")
+text(team_season_stats$NBA_FINALS_APPEARANCE ~ team_season_stats$WIN_PCT,labels=team_season_stats$TEAM_NAME, cex= 0.5, pos=3)
+
+plot(~ away  + fgm + stl + blk + ast + fg3_pct + fg3a + fg3m, data = total_teams)
+plot(total_teams$fg_pct ~ total_teams$team_id, col=c("firebrick"))
+plot(total_teams$fg3_pct ~ total_teams$team_id, col=c("firebrick"), las=2)
+plot(total_teams$pf ~ total_teams$team_id, col=c("firebrick"), las=2)
+plot(total_teams$pts ~ total_teams$team_id, col=c("firebrick"), las=2)
+plot(total_teams$fg3m ~ total_teams$fg3_pct, col=c("firebrick", "blue"), pch=16)
+plot(total_teams$fgm ~ total_teams$ast, col=c("firebrick", "blue"), pch=16)
+plot(total_teams$fgm, total_teams$ast, col=c("firebrick", "blue"), pch=16)
+plot(total_teams$fg3a ~ total_teams$fg3m, col=c("firebrick", "blue"), pch=16)
+
+# 3 Pointers Attempted vs 3 Pointers Made KOBEEEE
+plot(team_season_stats$FG3M ~ team_season_stats$FG3A, col=c("dodgerblue"),ylim=c(400,1150),main="3 Pointers Attempted vs. 3 Pointers Made",pch=16,xlab="FGM",ylab="FGA")
+text(team_season_stats$FG3M ~ team_season_stats$FG3A,labels=team_season_stats$TEAM_NAME, cex= 0.5, pos=3)
+
+
+# Free Throws Attempted vs Free Throws Made SHAQ Baby
+plot(team_season_stats$FTM ~ team_season_stats$FTA, col=c("dodgerblue"),ylim=c(min(team_season_stats$FTM),max(team_season_stats$FTM)),main="FT Attempted vs. FT Made",pch=16,xlab="FTM",ylab="FTA")
+text(team_season_stats$FTM ~ team_season_stats$FTA,labels=team_season_stats$TEAM_NAME, cex= 0.5, pos=3)
+
+# Field Goals Attempted vs Field Goals Made
+plot(team_season_stats$FGA ~ team_season_stats$FGM, col=c("dodgerblue"),ylim=c(6200,7400),main="FG Attempted vs. FG Made",pch=16,xlab="FGM",ylab="FGA")
+text(team_season_stats$FGA ~ team_season_stats$FGM,labels=team_season_stats$TEAM_NAME, cex= 0.5, pos=3)
+
+```
+
 
 #Spliting Data Into  Training and Test
 ```{r}
@@ -346,41 +504,28 @@ tr_data = split[[1]]
 te_data = split[[2]]
 ```
 
-#Data Exploration
-```{r}
-plot(~ ha  + fgm + stl + blk + ast + fg3_pct + fg3a + fg3m, data = tr_data)
-plot(total_teams$fg_pct ~ total_teams$team_id, col=c("firebrick"))
-plot(total_teams$fg3_pct ~ total_teams$team_id, col=c("firebrick"), las=2)
-plot(total_teams$pf ~ total_teams$team_id, col=c("firebrick"), las=2)
-plot(total_teams$pts ~ total_teams$team_id, col=c("firebrick"), las=2)
-plot(total_teams$fg3m ~ total_teams$fg3_pct, col=c("firebrick", "blue"), pch=16)
-plot(total_teams$fgm ~ total_teams$ast, col=c("firebrick", "blue"), pch=16)
-plot(total_teams$fgm, total_teams$ast, col=c("firebrick", "blue"), pch=16)
-plot(total_teams$fg3a ~ total_teams$fg3m, col=c("firebrick", "blue"), pch=16)
-```
 
 #Linear Model
 ```{r}
 
-# fv = c("ha","fgm","fga","fg3m","fg3a","ftm","fta","oreb","dreb","ast","stl","blk","tov")
+# fv = c("away","fgm","fga","fg3m","fg3a","ftm","fta","oreb","dreb","ast","stl","blk","tov")
 # 
-# fit3 = lm(pts ~ fgm + oreb + dreb + reb + ast + stl + tov + pf, data = tr_data)
-# summary(fit3)
-# 
-# predicted = predict(fit3, newdata = te_data)
-# actual = te_data$pts
-# plot_predict_actual(predicted, actual, 2000, "Predictions from test data")
+fit3 = lm(pts ~ fgm + oreb + dreb + reb + ast + stl + tov + pf, data = tr_data)
+summary(fit3)
 
-
-# fv = c("ha","fgm","fga","fg3m","fg3a","ftm","fta","oreb","dreb","ast","stl","blk","tov")
-
-
-
-
- fit = lm(pts ~ ha  + fgm + stl + blk + ast + fg3_pct + fg3a + fg3m, data = tr_data)
-# fit = lm(pts ~ pf + fg3m + fgm + fg3a + ast, data = tr_data)
-
+fit = lm(pts ~ fgm  + ftm , data = tr_data)
 summary(fit)
+ 
+predicted = predict(fit, newdata = te_data)
+actual = te_data$pts
+plot_predict_actual(predicted, actual, 10, "Predictions from test data")
+
+
+# fv = c("away","fgm","fga","fg3m","fg3a","ftm","fta","oreb","dreb","ast","stl","blk","tov")
+
+#fit = lm(pts ~ fg_pct + tov, data = tr_data)
+
+
 # summary(fit2)
 ```
 
@@ -399,6 +544,53 @@ rmse = sqrt(mean((te_data$pts - predicted)^2))
 rmse
 # rmse2
 
+```
+
+
+# LINEAR MODEL WINNER
+```{r}
+head_to_head = function(team1,team2){
+  # get both the team's entire season stats
+#   firstTeam = total_teams[total_teams$team_name == team1,]
+#   secondTeam = total_teams[total_teams$team_name == team2,]
+#   
+#   firstTeam$game_date = sort(as.Date(firstTeam$game_date,format = "%b %d, %Y"))
+#   secondTeam$game_date = sort(as.Date(secondTeam$game_date,format = "%b %d, %Y"))
+
+  
+  firstTeam = te_data[te_data$team_name == team1,]
+  last_10_games_team1 = tail(firstTeam,10)
+  last_10_games_team1$away = as.numeric(last_10_games_team1$away)
+  
+  # Calculates home court advantage likelihood of winning
+  home_advantage = sum(last_10_games_team1$wl == 1 & last_10_games_team1$away == 0) / sum(last_10_games_team1$away == 0)
+  
+  last_10_games_team1 = lapply(last_10_games_team1[, c("pf", "reb", "fgm", "fga", "fg_pct", "fg3m", "fg3a", "fg3_pct", "ftm",  "fta", "ft_pct", "oreb", "dreb", "ast", "stl", "blk", "tov", "pts","away")], mean, na.rm = TRUE)
+  
+  
+  secondTeam = te_data[te_data$team_name == team2,]
+  last_10_games_team2 = tail(secondTeam,10)
+  last_10_games_team2$away = as.numeric(last_10_games_team2$away)
+  
+  # Calculates home court advantage likelihood of winning
+  home_advantage2 = sum(last_10_games_team2$wl == 1 & last_10_games_team2$away == 0) / sum(last_10_games_team2$away == 0)
+
+  last_10_games_team2 = lapply(last_10_games_team2[, c("pf", "reb", "fgm", "fga", "fg_pct", "fg3m", "fg3a", "fg3_pct", "ftm",  "fta", "ft_pct", "oreb", "dreb", "ast", "stl", "blk", "tov", "pts","away")], mean, na.rm = TRUE)
+  
+  
+  # Predicts and rounds the scores
+  score1 = round(predict(fit, newdata = last_10_games_team1))
+  score2 = round(predict(fit, newdata = last_10_games_team2))
+  
+  final_results = data.frame(score=c(score1,score2))
+  final_results$win[1] = ifelse(final_results$score[1] > final_results$score[2],"W","L")
+  final_results$win[2] = ifelse(final_results$score[2] > final_results$score[1],"W","L")
+
+  return(final_results)
+}
+
+head_to_head("pistons","clippers")
+
 par(mfrow=c(2,1))
 plot_predict_actual(predicted ,te_data$pts, 5, title = "Predictions from Testing Data")
 # plot_predict_actual(predicted2 ,te_data$pts, 5, title = "Predictions from Testing Data2")
@@ -414,10 +606,10 @@ tr_data$wl = ifelse(tr_data$wl == "W", 1, 0 )
 
 
 # this fit works better than the latter
-fit3 = glm(wl ~ fta + ft_pct + reb + ast + stl + blk + tov + pf + pts, data = tr_data, family = binomial)
+fit3 = glm(wl ~ fta + reb + ast + stl + blk + tov, data = tr_data, family = binomial)
 
 
-# fit3 = glm(wl ~ pts + ha  + fgm + stl + blk + ast + fg3_pct + fg3a + fg3m, data = tr_data, family = binomial)
+# fit3 = glm(wl ~ pts + away  + fgm + stl + blk + ast + fg3_pct + fg3a + fg3m, data = tr_data, family = binomial)
 
 head(tr_data)
 summary(fit3)
