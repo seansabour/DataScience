@@ -4,10 +4,10 @@ library(e1071)
 library(rpart)
 library(rpart.plot)
 library(maptree)
-source("C:/Users/joshua/Downloads/lin-regr-util.R")
+#source("C:/Users/joshua/Downloads/lin-regr-util.R")
 
-# source("/Users/seansabour/Desktop/School/CST495 Data Science/Homework/class-util.R")
-# source("/Users/seansabour/Desktop/School/CST495 Data Science/Homework/lin-regr-util.R")
+ source("/Users/seansabour/Desktop/School/CST495 Data Science/Homework/class-util.R")
+ source("/Users/seansabour/Desktop/School/CST495 Data Science/Homework/lin-regr-util.R")
 
 nba_stats =  fromJSON("http://stats.nba.com/stats/leaguedashteamptshot?LeagueID=00&PerMode=Totals&Season=2014-15&SeasonType=Regular%20Season")
 nba_stats2 = fromJSON("http://stats.nba.com/stats/leaguedashplayerptshot?LeagueID=00&PerMode=Totals&Season=2014-15&SeasonType=Regular%20Season")
@@ -755,7 +755,7 @@ team2_s = NULL
 }
 total_teams$wl = ifelse(total_teams$wl == "W", 1, 0)
 # perameter one is team, 2 agaist, 3 regresstion, 4 list ligistic model
-play_games("OKC", "DAL", total_teams, fit, fit3)
+play_games("G", "DAL", total_teams, fit, fit3)
 
 
 # total_teams[total_teams$matchup == paste(team1, "@", team2) | total_teams$matchup == paste(team1, "vs.", team2),]
