@@ -4,37 +4,10 @@ library(e1071)
 library(rpart)
 library(rpart.plot)
 library(maptree)
-source("C:/Users/joshua/Downloads/lin-regr-util.R")
+#source("C:/Users/joshua/Downloads/lin-regr-util.R")
 
-# source("/Users/seansabour/Desktop/School/CST495 Data Science/Homework/class-util.R")
-# source("/Users/seansabour/Desktop/School/CST495 Data Science/Homework/lin-regr-util.R")
-
-nba_stats =  fromJSON("http://stats.nba.com/stats/leaguedashteamptshot?LeagueID=00&PerMode=Totals&Season=2014-15&SeasonType=Regular%20Season")
-nba_stats2 = fromJSON("http://stats.nba.com/stats/leaguedashplayerptshot?LeagueID=00&PerMode=Totals&Season=2014-15&SeasonType=Regular%20Season")
-nba_stats4 = fromJSON("http://stats.nba.com/stats/teamyearbyyearstats?TeamID=1610612746&LeagueId=00&SeasonType=Regular%20Season&perMode=Totals")
-nba_stats_playoffs = fromJSON("http://stats.nba.com/stats/leaguedashteamptshot?LeagueID=00&PerMode=Totals&Season=2014-15&SeasonType=Playoffs")
-
-teamstat_playoffs = data.frame(nba_stats_playoffs$resultSets$rowSet[1])
-colnames(teamstat_playoffs) <- nba_stats_playoffs$resultSets$headers[[1]]
-
-teamstat = data.frame(nba_stats$resultSets$rowSet[1])
-colnames(teamstat) <- nba_stats$resultSets$headers[[1]]
-
-teamstat4 = data.frame(nba_stats4$resultSets$rowSet[1])
-colnames(teamstat4) <- nba_stats4$resultSets$headers[[1]]
-
-nba_stats$resultSets$headers
-nba_stats$resultSets$rowSet
-
-teamstat = data.frame(nba_stats$resultSets$rowSet[1])
-colnames(teamstat) <- nba_stats$resultSets$headers[[1]]
-nba_stats2$resultSets$headers
-nba_stats2$resultSets$rowSet
-
-player = data.frame(nba_stats2$resultSets$rowSet[1])
-colnames(player) <- nba_stats2$resultSets$headers[[1]]
-
-
+ source("/Users/seansabour/Desktop/School/CST495 Data Science/Homework/class-util.R")
+ source("/Users/seansabour/Desktop/School/CST495 Data Science/Homework/lin-regr-util.R")
 
 nba_stats_Hawks = fromJSON("http://stats.nba.com/stats/teamgamelog?TeamID=1610612737&PerMode=Totals&Season=2014-15&SeasonType=Regular%20Season")
 nba_stats_Celtics = fromJSON("http://stats.nba.com/stats/teamgamelog?TeamID=1610612738&PerMode=Totals&Season=2014-15&SeasonType=Regular%20Season")
@@ -755,7 +728,7 @@ team2_s = NULL
 }
 total_teams$wl = ifelse(total_teams$wl == "W", 1, 0)
 # perameter one is team, 2 agaist, 3 regresstion, 4 list ligistic model
-play_games("OKC", "DAL", total_teams, fit, fit3)
+play_games("GSW", "SAS", total_teams, fit, fit3)
 
 
 # total_teams[total_teams$matchup == paste(team1, "@", team2) | total_teams$matchup == paste(team1, "vs.", team2),]
