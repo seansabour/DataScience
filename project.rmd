@@ -527,48 +527,46 @@ text(team_season_stats15_16$FGA ~ team_season_stats15_16$FGM,labels=team_season_
 #Logistic Regression Model
 ```{r}
 
-fit = glm(wl ~ fgm + fg3m + fgm_opp + fg3m_opp, data = game_by_game14_15, family = binomial)
+fit = glm(wl ~  tov + reb + fgm + fg3m + fgm_opp + tov_opp + reb_opp + fg3m_opp, data = game_by_game14_15, family = binomial)
 summary(fit)
 
+x = predict(fit,newdaata = game_by_game15_16,type="response")
+predicted = ifelse(x > 0.5,1,0)
+predicted = as.numeric(predicted)
+actuals = game_by_game15_16$wl
+mean(predicted == actuals)
 # x = te_data[,c("fgm","fg3m","ftm","blk","stl","reb","ast","tov","pf","fgm_opp","fg3m_opp","ftm_opp","blk_opp","stl_opp","reb_opp","ast_opp","tov_opp","pf_opp")]
 
 head_to_head = function(team1,team2){
-  team1="spurs"
-  team2="warriors"
+
   # get both the team's entire season stats
-  firstTeam = game_by_game15_16[game_by_game15_16$team_name == team1 | game_by_game15_16$team_name_opp == team1,]
+  firstTeam = game_by_game15_16[game_by_game15_16$team_name == team1,]
   firstTeam$game_date = sort(as.Date(firstTeam$game_date,format = "%b %d, %Y"))
    
-  last_10_games_team1 = tail(firstTeam,10)
+  last_10_games_team1 = tail(firstTeam,30)
 
+
+  last_10_games_team1 = last_10_games_team1[sample(nrow(last_10_games_team1),10), ]
   # Calculates home court advantage likelihood of winning
-  home_advantage = sum(last_10_games_team1$wl == 1 & last_10_games_team1$away == 0) / sum(last_10_games_team1$away == 0)
+  #home_advantage = sum(last_10_games_team1$wl == 1 & last_10_games_team1$away == 0) / sum(last_10_games_team1$away == 0)
 
-  #### FIX THIS DOESNT TAKE INTO ACCOUNT FOR AWAY GAMES...
-#   if(last_10_games_team1$team_name == team1){
-#       last_10_games_team1 = lapply(last_10_games_team1[, c("fgm","fg3m","ftm","blk","stl","reb","ast","tov","pf")], mean, na.rm = TRUE)
-#   } else {
-#     last_10_games_team1 = lapply(last_10_games_team1[, c("fgm_opp","fg3m_opp","ftm_opp","blk_opp","stl_opp","reb_opp","ast_opp","tov_opp","pf_opp")], mean, na.rm = TRUE)
-#   }
+  last_10_games_team1 = lapply(last_10_games_team1[, c("fgm","fg3m","ftm","blk","stl","reb","ast","tov","pf")], mean, na.rm = TRUE)
   
   
-  secondTeam = game_by_game15_16[game_by_game15_16$team_name == team2 | game_by_game15_16$team_name_opp == team2,]
+  secondTeam = game_by_game15_16[game_by_game15_16$team_name_opp == team2,]
   secondTeam$game_date = sort(as.Date(secondTeam$game_date,format = "%b %d, %Y"))
-  last_10_games_team2 = tail(secondTeam,10)
+  last_10_games_team2 = tail(secondTeam,30)
+  last_10_games_team2 = last_10_games_team2[sample(nrow(last_10_games_team2),10), ]
 
   # Calculates home court advantage likelihood of winning
-  home_advantage2 = sum(last_10_games_team2$wl == 1 & last_10_games_team2$away == 0) / sum(last_10_games_team2$away == 0)
+  #home_advantage2 = sum(last_10_games_team2$wl == 1 & last_10_games_team2$away == 0) / sum(last_10_games_team2$away == 0)
 
-#   if(last_10_games_team2$team_name == team1){
-#       last_10_games_team2 = lapply(last_10_games_team2[, c("fgm","fg3m","ftm","blk","stl","reb","ast","tov","pf")], mean, na.rm = TRUE)
-#   } else {
-#     last_10_games_team2 = lapply(last_10_games_team2[, c("fgm_opp","fg3m_opp","ftm_opp","blk_opp","stl_opp","reb_opp","ast_opp","tov_opp","pf_opp")], mean, na.rm = TRUE)
-#   }
+     last_10_games_team2 = lapply(last_10_games_team2[, c("fgm_opp","fg3m_opp","ftm_opp","blk_opp","stl_opp","reb_opp","ast_opp","tov_opp","pf_opp")], mean, na.rm = TRUE)
+
   
   
   x = as.data.frame(last_10_games_team1)
   y = as.data.frame(last_10_games_team2)
-  names(y) = c("fgm_opp", "fg3m_opp", "ftm_opp" ,"blk_opp", "stl_opp", "reb_opp", "ast_opp", "tov_opp", "pf_opp")
   x = cbind(x,y)
   # Predicts and rounds the scores
   team1_win_loss = predict(fit, newdata = x, type="response")
@@ -577,9 +575,21 @@ head_to_head = function(team1,team2){
   return(team1_win_loss)
 }
 
-head_to_head("spurs","warriors")
+team1_win_loss = head_to_head("spurs","cavaliers")
 
-
+for(i in 1:7) {
+  if(i <= 2){
+    head_to_head(team1,team2)
+  } else if(i > 2 && i <=4) {
+    head_to_head(team2,team1)
+  } else if (i == 5){
+    head_to_head(team1,team2)
+  } else if (i == 6) {
+    head_to_head(team2,team1)
+  } else if(i == 7) {
+    head_to_head(team1,team2)
+  }
+}
 
 
 
@@ -626,6 +636,8 @@ hist(y[actuals3 == 1], main="Output when won game",
 #Prec_recall summary
 ```{r}
 prec_recall_summary = function(predicts, actuals) {
+  predicts=predicted
+  actuals=actuals
   thresh = seq(0, 1, length.out=50)
   prec_rec = data.frame()
   actuals = factor(as.numeric(actuals))
@@ -641,9 +653,9 @@ prec_recall_summary = function(predicts, actuals) {
   return(prec_rec)
 }
 
-prec_rec1 = prec_recall_summary(predicts3, actuals3)
+prec_rec1 = prec_recall_summary(predicted, actuals)
 
-par(mfrow=c(2,1))
+par(mfrow=c(1,1))
 par(mar=c(4, 4, 2, 0.5))
 
 plot(prec_rec1$precision ~ prec_rec1$threshold, type = "l", col="blue", xlab="Threshold", ylab="Presiction")
