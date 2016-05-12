@@ -530,11 +530,45 @@ text(team_season_stats15_16$FGA ~ team_season_stats15_16$FGM,labels=team_season_
 fit = glm(wl ~  tov + reb + fgm + fg3m + fgm_opp + tov_opp + reb_opp + fg3m_opp, data = game_by_game14_15, family = binomial)
 summary(fit)
 
-x = predict(fit,newdaata = game_by_game15_16,type="response")
-predicted = ifelse(x > 0.5,1,0)
-predicted = as.numeric(predicted)
+y = predict(fit,newdata = game_by_game15_16,type="response")
+predicts = as.numeric(y > 0.6)
 actuals = game_by_game15_16$wl
-mean(predicted == actuals)
+mean(predicts == actuals)
+
+
+prec_recall_summary = function(predicts, actuals) {
+  thresh = seq(0, 1, length.out=50)
+  prec_rec = data.frame()
+  actuals = factor(as.numeric(actuals))
+  for (th in thresh) {
+    predicts = factor(as.numeric(y >= th), levels=c("0","1"))
+    prec_rec = rbind(prec_rec, as.vector(table(predicts, actuals)))
+  }
+  names(prec_rec) = c("TN", "FP", "FN", "TP")
+  prec_rec$threshold = thresh
+  prec_rec$precision = prec_rec$TP/(prec_rec$TP + prec_rec$FP)
+  prec_rec$recall    = prec_rec$TP/(prec_rec$TP + prec_rec$FN)
+  prec_rec$false_pos = prec_rec$FP/(prec_rec$FP + prec_rec$TN)
+  return(prec_rec)
+}
+
+prec_rec1 = prec_recall_summary(predicts, actuals)
+
+par(mfrow=c(1,1))
+plot(prec_rec1$recall ~ prec_rec1$false_pos, type = "l", col = "red", xlab="Threshold", ylab="Recall")
+grid(nx = NULL, ny = NULL, col = "lightgray", lty = "dotted",
+     lwd = par("lwd"), equilogs = TRUE)
+title("receiver operating characteristic")
+
+par(mfrow=c(1,1))
+plot(prec_rec1$precision ~ prec_rec1$recall, type = "l", col = "red", xlab="precision", ylab="recall")
+grid(nx = NULL, ny = NULL, col = "lightgray", lty = "dotted",
+     lwd = par("lwd"), equilogs = TRUE)
+title("Precision recall curve")
+
+
+
+
 # x = te_data[,c("fgm","fg3m","ftm","blk","stl","reb","ast","tov","pf","fgm_opp","fg3m_opp","ftm_opp","blk_opp","stl_opp","reb_opp","ast_opp","tov_opp","pf_opp")]
 
 head_to_head = function(team1,team2){
@@ -571,26 +605,38 @@ head_to_head = function(team1,team2){
   # Predicts and rounds the scores
   team1_win_loss = predict(fit, newdata = x, type="response")
   
-  ifelse(team1_win_loss > 0.5,'W','L')
+  team1_win_loss = ifelse(team1_win_loss > 0.6,'W','L')
+
   return(team1_win_loss)
 }
 
-team1_win_loss = head_to_head("spurs","cavaliers")
-
-for(i in 1:7) {
-  if(i <= 2){
-    head_to_head(team1,team2)
-  } else if(i > 2 && i <=4) {
-    head_to_head(team2,team1)
-  } else if (i == 5){
-    head_to_head(team1,team2)
-  } else if (i == 6) {
-    head_to_head(team2,team1)
-  } else if(i == 7) {
-    head_to_head(team1,team2)
-  }
+series = function(team1,team2) {
+    team1_score = 0
+    team2_score = 0
+    team1="spurs"
+    team2="clippers"
+    for(i in 1:7) {
+      if(team1_score >= 4 | team2_score >= 4){ break }
+      if(i <= 2){
+        x = head_to_head(team1,team2)
+        ifelse(x == "W",team1_score = team1_score + 1,team2_score = team2_score + 1)
+      } else if(i > 2 && i <=4) {
+        x = head_to_head(team2,team1)
+         ifelse(x == "W",team2_score = team2_score + 1,team1_score = team1_score + 1)
+      } else if (i == 5){
+        x = head_to_head(team1,team2)
+         ifelse( x == "W",team1_score = team1_score + 1,team2_score = team2_score + 1)
+      } else if (i == 6) {
+        x = head_to_head(team2,team1)
+         ifelse( x== "W",team2_score = team2_score + 1,team1_score = team1_score + 1)
+      } else if(i == 7) {
+        x = head_to_head(team1,team2)
+         ifelse(x == "W",team1_score = team1_score + 1,team2_score = team2_score + 1)
+      }
+    }
+    paste0("Team 1: ", team1_score, ", Team 2: ", team2_score)
 }
-
+series("clippers","spurs")
 
 
 
@@ -601,23 +647,10 @@ plot_predict_actual(predicted ,te_data$pts, 5, title = "Predictions from Testing
 
 # Logistic regression
 ```{r}
-
-
-p = predict(fit,newdata = x, type="response")
-p[2]
-
-# this fit works better than the latter
-fit3 = glm(wl ~ fta + reb + ast + stl + blk + tov, data = tr_data, family = binomial)
-summary(fit3)
-
-
-# fit3 = glm(wl ~ pts + away  + fgm + stl + blk + ast + fg3_pct + fg3a + fg3m, data = tr_data, family = binomial)
-
-
 # compute confusion matrix
-y = predict(fit3, newdata=te_data, type="response")
+y = predict(fit, newdata=game_by_game15_16, type="response")
 predicts3 = as.numeric(y > 0.5)
-actuals3 = te_data$wl
+actuals3 = game_by_game15_16$wl
 conf_mtx3 = table(predicts3, actuals3)
 
 par(mfrow=c(1,1))
@@ -635,25 +668,7 @@ hist(y[actuals3 == 1], main="Output when won game",
 
 #Prec_recall summary
 ```{r}
-prec_recall_summary = function(predicts, actuals) {
-  predicts=predicted
-  actuals=actuals
-  thresh = seq(0, 1, length.out=50)
-  prec_rec = data.frame()
-  actuals = factor(as.numeric(actuals))
-  for (th in thresh) {
-    predicts = factor(as.numeric(y >= th), levels=c("0","1"))
-    prec_rec = rbind(prec_rec, as.vector(table(predicts, actuals)))
-  }
-  names(prec_rec) = c("TN", "FP", "FN", "TP")
-  prec_rec$threshold = thresh
-  prec_rec$precision = prec_rec$TP/(prec_rec$TP + prec_rec$FP)
-  prec_rec$recall    = prec_rec$TP/(prec_rec$TP + prec_rec$FN)
-  prec_rec$false_pos = prec_rec$FP/(prec_rec$FP + prec_rec$TN)
-  return(prec_rec)
-}
 
-prec_rec1 = prec_recall_summary(predicted, actuals)
 
 par(mfrow=c(1,1))
 par(mar=c(4, 4, 2, 0.5))
@@ -666,12 +681,7 @@ grid(nx = NULL, ny = NULL, col = "lightgray", lty = "dotted",
      lwd = par("lwd"), equilogs = TRUE)
 
 
-par(mfrow=c(1,1))
-plot(prec_rec1$recall ~ prec_rec1$false_pos, type = "l", col = "red", xlab="Threshold", ylab="Recall")
-grid(nx = NULL, ny = NULL, col = "lightgray", lty = "dotted",
-     lwd = par("lwd"), equilogs = TRUE)
 
-title("receiver operating characteristic")
 
 par(mfrow=c(1,1))
 plot(prec_rec1$precision ~ prec_rec1$recall, type = "l", col = "red", xlab="precision", ylab="recall")
