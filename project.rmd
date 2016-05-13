@@ -12,8 +12,9 @@ library(e1071)
 library(rpart)
 library(rpart.plot)
 library(maptree)
-source("C:/Users/joshua/Downloads/lin-regr-util.R")
-#source("/Users/seansabour/Desktop/School/CST495 Data Science/Homework/class-util.R")  source("/Users/seansabour/Desktop/School/CST495 Data Science/Homework/lin-regr-util.R")
+#source("C:/Users/joshua/Downloads/lin-regr-util.R")
+#source("/Users/seansabour/Desktop/School/CST495 Data Science/Homework/class-util.R")
+source("/Users/seansabour/Desktop/School/CST495 Data Science/Homework/lin-regr-util.R")
 ```
 
 #Data Acquisition 
@@ -565,12 +566,10 @@ plot(prec_rec1$precision ~ prec_rec1$recall, type = "l", col = "red", xlab="prec
 grid(nx = NULL, ny = NULL, col = "lightgray", lty = "dotted",
      lwd = par("lwd"), equilogs = TRUE)
 title("Precision recall curve")
+```
 
 
-
-
-# x = te_data[,c("fgm","fg3m","ftm","blk","stl","reb","ast","tov","pf","fgm_opp","fg3m_opp","ftm_opp","blk_opp","stl_opp","reb_opp","ast_opp","tov_opp","pf_opp")]
-
+```{r}
 head_to_head = function(team1,team2){
 
   # get both the team's entire season stats
@@ -578,12 +577,7 @@ head_to_head = function(team1,team2){
   firstTeam$game_date = sort(as.Date(firstTeam$game_date,format = "%b %d, %Y"))
    
   last_10_games_team1 = tail(firstTeam,30)
-
-
   last_10_games_team1 = last_10_games_team1[sample(nrow(last_10_games_team1),10), ]
-  # Calculates home court advantage likelihood of winning
-  #home_advantage = sum(last_10_games_team1$wl == 1 & last_10_games_team1$away == 0) / sum(last_10_games_team1$away == 0)
-
   last_10_games_team1 = lapply(last_10_games_team1[, c("fgm","fg3m","ftm","blk","stl","reb","ast","tov","pf")], mean, na.rm = TRUE)
   
   
@@ -592,9 +586,6 @@ head_to_head = function(team1,team2){
   last_10_games_team2 = tail(secondTeam,30)
   last_10_games_team2 = last_10_games_team2[sample(nrow(last_10_games_team2),10), ]
 
-  # Calculates home court advantage likelihood of winning
-  #home_advantage2 = sum(last_10_games_team2$wl == 1 & last_10_games_team2$away == 0) / sum(last_10_games_team2$away == 0)
-
      last_10_games_team2 = lapply(last_10_games_team2[, c("fgm_opp","fg3m_opp","ftm_opp","blk_opp","stl_opp","reb_opp","ast_opp","tov_opp","pf_opp")], mean, na.rm = TRUE)
 
   
@@ -602,10 +593,11 @@ head_to_head = function(team1,team2){
   x = as.data.frame(last_10_games_team1)
   y = as.data.frame(last_10_games_team2)
   x = cbind(x,y)
+  
   # Predicts and rounds the scores
   team1_win_loss = predict(fit, newdata = x, type="response")
   
-  team1_win_loss = ifelse(team1_win_loss > 0.5,'W','L')
+  team1_win_loss = ifelse(team1_win_loss > 0.6,'W','L')
 
   return(team1_win_loss)
 }
@@ -674,12 +666,147 @@ paste0(team1, ": ", team1_score, ", ",team2, ": ", team2_score)
 
 
 ```
+
+
+
 ```{r}
 
 set.seed(12)
+head_to_head_2 = function(team1,team2){
 
-series("warriors","rockets")
+  # get both the team's entire season stats
+  firstTeam = game_by_game15_16[game_by_game15_16$team_name == team1,]
+  firstTeam$game_date = sort(as.Date(firstTeam$game_date,format = "%b %d, %Y"))
+   
+  last_10_games_team1 = tail(firstTeam,10)
+  last_10_games_team1 = lapply(last_10_games_team1[, c("fgm","fg3m","ftm","blk","stl","reb","ast","tov","pf")], mean, na.rm = TRUE)
+  
+  
+  secondTeam = game_by_game15_16[game_by_game15_16$team_name_opp == team2,]
+  secondTeam$game_date = sort(as.Date(secondTeam$game_date,format = "%b %d, %Y"))
+  last_10_games_team2 = tail(secondTeam,10)
+  last_10_games_team2 = lapply(last_10_games_team2[, c("fgm_opp","fg3m_opp","ftm_opp","blk_opp","stl_opp","reb_opp","ast_opp","tov_opp","pf_opp")], mean, na.rm = TRUE)
+
+  x = as.data.frame(last_10_games_team1)
+  y = as.data.frame(last_10_games_team2)
+  x = cbind(x,y)
+  
+  # Predicts and rounds the scores
+  team1_win_loss = predict(fit, newdata = x, type="response")
+  
+  return(team1_win_loss)
+}
+
+game = function(team1,team2){
+
+  team1_home = head_to_head_2(team1,team2)
+  x = sample(c(0,1),1,prob=c(team1_home,(1-team1_home)))
+  ifelse(x == 0,return (team1), return (team2))
+}
+
+x = c()
+series_BRUNZ1x13 = function(team1,team2) {
+  team1_score = 0
+  team2_score = 0
+
+  for(i in 1:7) {
+    if(team1_score >= 4 | team2_score >= 4){ break }
+    if(i <= 2){
+      for(i in 1:100){
+        y = game(team1,team2)
+        x = c(x,y)
+      }
+     r = table(x)
+     winner = max(row.names(r))
+     
+      if(winner == team1){
+        team1_score = team1_score + 1 
+      }
+      else{
+        team2_score = team2_score + 1   
+      }
+    } else if(i > 2 && i <=4) {
+       for(i in 1:100){
+        y = game(team2,team1)
+        x = c(x,y)
+      }
+     r = table(x)
+     winner = max(row.names(r))
+      
+      if(winner == team2){
+        team2_score = team2_score + 1
+      }
+      else{
+        team1_score = team1_score + 1  
+      }
+      
+    } else if (i == 5){
+      for(i in 1:100){
+          y = game(team1,team2)
+          x = c(x,y)
+        }
+       r = table(x)
+       winner = max(row.names(r))
+        
+      if(winner == team1) {
+        team1_score = team1_score + 1 
+        
+      }
+      else{
+        team2_score = team2_score + 1   
+      }
+      
+    } else if (i == 6) {
+      for(i in 1:100){
+        y = game(team2,team1)
+        x = c(x,y)
+      }
+     r = table(x)
+     winner = max(row.names(r))
+      
+      if(winner == team2){
+        team2_score = team2_score + 1
+      }
+      else{
+        team1_score = team1_score + 1  
+      }
+      
+    } else if(i == 7) {
+      for(i in 1:100){
+            y = game(team1,team2)
+            x = c(x,y)
+          }
+         r = table(x)
+         winner = max(row.names(r))
+          
+        if(winner == team1) {
+        team1_score = team1_score + 1 
+        
+      }
+      else{
+        team2_score = team2_score + 1   
+      }
+    }
+  }
+print(paste0(team1, ": ", team1_score, ", ",team2, ": ", team2_score))
+}
+```
+
+#1st Round Predictions
+```{r}
+set.seed(12)
+series_BRUNZ1x13("clippers","blazers")
+series_BRUNZ1x13("warriors","rockets")
+series_BRUNZ1x13("thunder","mavericks")
+series_BRUNZ1x13("spurs","grizzlies")
+
+series_BRUNZ1x13("cavaliers","pistons")
+series_BRUNZ1x13("hawks","celtics")
+series_BRUNZ1x13("heat","hornets")
+series_BRUNZ1x13("raptors","pacers")
+
 series("clippers","blazers")
+series("warriors","rockets")
 series("thunder","mavericks")
 series("spurs","grizzlies")
 
@@ -687,15 +814,19 @@ series("cavaliers","pistons")
 series("hawks","celtics")
 series("heat","hornets")
 series("raptors","pacers")
-
-
 ```
 
 <br>
 
+#2nd Round 
 ```{r}
 
 set.seed(12)
+series_BRUNZ1x13("warriors","blazers")
+series_BRUNZ1x13("thunder","spurs")
+
+series_BRUNZ1x13("cavaliers","hawks")
+series_BRUNZ1x13("heat","raptors")
 
 series("warriors","blazers")
 series("thunder","spurs")
@@ -706,10 +837,13 @@ series("heat","raptors")
 ```
 
 <br>
-
+#Semi-Finals
 ```{r}
 
 set.seed(12)
+series_BRUNZ1x13("warriors","thunder")
+
+series_BRUNZ1x13("cavaliers","raptors")
 
 series("warriors","thunder")
 
@@ -717,9 +851,12 @@ series("cavaliers","raptors")
 
 ```
 
+#Finals
 ```{r}
 
 set.seed(12)
+series_BRUNZ1x13("warriors","cavaliers")
+
 
 series("warriors","cavaliers")
 
