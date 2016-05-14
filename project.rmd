@@ -674,11 +674,19 @@ paste0(team1, ": ", team1_score, ", ",team2, ": ", team2_score)
 
 
 ```
+
+### Start
+<br>
+<br>
+<br>
+<br>
+
 ```{r}
 
 set.seed(12)
 
-series("warriors","rockets")
+series("warr
+       ","rockets")
 series("clippers","blazers")
 series("thunder","mavericks")
 series("spurs","grizzlies")
@@ -692,7 +700,9 @@ series("raptors","pacers")
 ```
 
 <br>
-
+<br>
+<br>
+<br>
 ```{r}
 
 set.seed(12)
@@ -706,6 +716,10 @@ series("heat","raptors")
 ```
 
 <br>
+<br>
+<br>
+<br>
+<br>
 
 ```{r}
 
@@ -717,6 +731,13 @@ series("cavaliers","raptors")
 
 ```
 
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
 ```{r}
 
 set.seed(12)
