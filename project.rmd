@@ -12,9 +12,9 @@ library(e1071)
 library(rpart)
 library(rpart.plot)
 library(maptree)
-#source("C:/Users/joshua/Downloads/lin-regr-util.R")
+source("C:/Users/joshua/Downloads/lin-regr-util.R")
 #source("/Users/seansabour/Desktop/School/CST495 Data Science/Homework/class-util.R")
-source("/Users/seansabour/Desktop/School/CST495 Data Science/Homework/lin-regr-util.R")
+# source("/Users/seansabour/Desktop/School/CST495 Data Science/Homework/lin-regr-util.R")
 ```
 
 #Data Acquisition 
@@ -487,6 +487,11 @@ game_by_game14_15 = cleanData(game_by_game14_15)
 game_by_game15_16 = cleanData(game_by_game15_16)
 ```
 
+<br>
+<br>
+<br>
+<br>
+<br>
 
 #Data Exploration
 ```{r}
@@ -500,16 +505,62 @@ abline(v=mean(team_season_stats15_16$WIN_PCT))
 plot(team_season_stats15_16$NBA_FINALS_APPEARANCE ~ team_season_stats15_16$WIN_PCT,xlim=c(0,1),ylim=c(0,32),col="dodgerblue",pch=16,xlab="Win Ratio",ylab="Finals Appearances",main="Finals Appearances vs. Current Win Ratio")
 text(team_season_stats15_16$NBA_FINALS_APPEARANCE ~ team_season_stats15_16$WIN_PCT,labels=team_season_stats15_16$TEAM_NAME, cex= 0.5, pos=3)
 
-plot(~ away  + fgm + stl + blk + ast + fg3_pct + fg3a + fg3m, data = game_by_game15_16)
-plot(game_by_game15_16$fg_pct ~ game_by_game15_16$team_id, col=c("firebrick"))
-plot(game_by_game15_16$fg3_pct ~ game_by_game15_16$team_id, col=c("firebrick"), las=2)
-plot(game_by_game15_16$pf ~ game_by_game15_16$team_id, col=c("firebrick"), las=2)
-plot(game_by_game15_16$pts ~ game_by_game15_16$team_id, col=c("firebrick"), las=2)
-plot(game_by_game15_16$fg3m ~ game_by_game15_16$fg3_pct, col=c("firebrick", "blue"), pch=16)
-plot(game_by_game15_16$fgm ~ game_by_game15_16$ast, col=c("firebrick", "blue"), pch=16)
-plot(game_by_game15_16$fgm, game_by_game15_16$ast, col=c("firebrick", "blue"), pch=16)
-plot(game_by_game15_16$fg3a ~ game_by_game15_16$fg3m, col=c("firebrick", "blue"), pch=16)
+```
 
+<br>
+<br>
+
+Taking a look at the features fg3_pct, fg3m, and fg3a look related, so does ast and fgm.
+```{r}
+plot(~ away  + fgm + stl + blk + ast + fg3_pct + fg3a + fg3m, data = game_by_game15_16)
+```
+<br>
+<br>
+
+Looks like the grizzlies have hightest point median. There are some more than 3/2 times the upper quartile outliers with the pistons and lakers
+. 
+```{r}
+plot(game_by_game15_16$fg_pct ~ game_by_game15_16$team_id, col=c("firebrick"), xaxt='n', xlab="Team Names", ylab="Field goal percentage")
+axis(1, at=1:30, labels=game_by_game15_16$team_name[1:30], las=2, cex.axis= 0.6)
+```
+<br>
+<br>
+
+Looks like the grizzlies have hightest 3 point median. There are some more than 3/2 times the upper quartile outliers with the kings and pacers. 
+```{r}
+plot(game_by_game15_16$fg3_pct ~ game_by_game15_16$team_id, col=c("firebrick"), xaxt='n', xlab="Team Names", ylab="3 pointers percentage")
+axis(1, at=1:30, labels=game_by_game15_16$team_name[1:30], las=2, cex.axis= 0.6)
+```
+<br>
+<br>
+
+Looks like the Pistons have hightest personal fouls median. There are lot more 3/2 times the upper quartile outliers than lower. I would think that high foul teams would give their opponets an advatage to score more points.
+```{r}
+plot(game_by_game15_16$pf ~ game_by_game15_16$team_id, col=c("firebrick"), xaxt='n', xlab="Team Names", ylab="Personal fouls")
+axis(1, at=1:30, labels=game_by_game15_16$team_name[1:30], las=2, cex.axis= 0.6)
+```
+<br>
+<br>
+
+Looks like the Grizzies have hightest total points median. There are lot more 3/2 times the upper quartile outliers than lower.
+
+```{r}
+plot(game_by_game15_16$pts ~ game_by_game15_16$team_id, col=c("firebrick"), xaxt='n', xlab="Team Names", ylab="Total points")
+axis(1, at=1:30, labels=game_by_game15_16$team_name[1:30], las=2, cex.axis= 0.6)
+```
+<br>
+<br>
+
+These three plots are the related ones that I stated in the first plot.
+```{r}
+plot(game_by_game15_16$fg3m ~ game_by_game15_16$fg3_pct, col=c("firebrick", "blue"), pch=16)
+
+plot(game_by_game15_16$fgm ~ game_by_game15_16$ast, col=c("firebrick", "blue"), pch=16)
+
+plot(game_by_game15_16$fg3a ~ game_by_game15_16$fg3m, col=c("firebrick", "blue"), pch=16)
+```
+
+```{r}
 # 3 Pointers Attempted vs 3 Pointers Made KOBEEEE
 plot(team_season_stats15_16$FG3M ~ team_season_stats15_16$FG3A, col=c("dodgerblue"),ylim=c(400,1150),main="3 Pointers Attempted vs. 3 Pointers Made",pch=16,xlab="FGM",ylab="FGA")
 text(team_season_stats15_16$FG3M ~ team_season_stats15_16$FG3A,labels=team_season_stats15_16$TEAM_NAME, cex= 0.5, pos=3)
@@ -667,15 +718,7 @@ paste0(team1, ": ", team1_score, ", ",team2, ": ", team2_score)
 
 ```
 
-<<<<<<< HEAD
-### Start
-<br>
-<br>
-<br>
-<br>
-=======
 
->>>>>>> 0f898bf2969779fd421bbcd91c02f73d80a983a7
 
 ```{r}
 
@@ -813,11 +856,7 @@ series_BRUNZ1x13("hawks","celtics")
 series_BRUNZ1x13("heat","hornets")
 series_BRUNZ1x13("raptors","pacers")
 
-<<<<<<< HEAD
-series("warr
-       ","rockets")
-=======
->>>>>>> 0f898bf2969779fd421bbcd91c02f73d80a983a7
+
 series("clippers","blazers")
 series("warriors","rockets")
 series("thunder","mavericks")
@@ -830,14 +869,7 @@ series("raptors","pacers")
 ```
 
 <br>
-<<<<<<< HEAD
-<br>
-<br>
-<br>
-=======
 
-#2nd Round 
->>>>>>> 0f898bf2969779fd421bbcd91c02f73d80a983a7
 ```{r}
 
 set.seed(12)
@@ -856,15 +888,8 @@ series("heat","raptors")
 ```
 
 <br>
-<<<<<<< HEAD
-<br>
-<br>
-<br>
-<br>
 
-=======
-#Semi-Finals
->>>>>>> 0f898bf2969779fd421bbcd91c02f73d80a983a7
+
 ```{r}
 
 set.seed(12)
@@ -878,17 +903,10 @@ series("cavaliers","raptors")
 
 ```
 
-<<<<<<< HEAD
 
 
-<br>
-<br>
-<br>
-<br>
-<br>
-=======
-#Finals
->>>>>>> 0f898bf2969779fd421bbcd91c02f73d80a983a7
+
+
 ```{r}
 
 set.seed(12)
