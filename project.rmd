@@ -12,12 +12,12 @@ library(e1071)
 library(rpart)
 library(rpart.plot)
 library(maptree)
-source("C:/Users/joshua/Downloads/lin-regr-util.R")
-#source("/Users/seansabour/Desktop/School/CST495 Data Science/Homework/class-util.R")
-# source("/Users/seansabour/Desktop/School/CST495 Data Science/Homework/lin-regr-util.R")
+#source("C:/Users/joshua/Downloads/lin-regr-util.R")
+source("/Users/seansabour/Desktop/School/CST495 Data Science/Homework/lin-regr-util.R")
 ```
 
 #Data Acquisition 
+For our data acquisition we used the NBA api to pull most of our data. A large portion of this project was actually getting data, cleaning it, and exploring the data.
 ```{r,echo=FALSE}
 player = fromJSON("http://stats.nba.com/stats/leaguedashplayerptshot?LeagueID=00&PerMode=Totals&Season=2014-15&SeasonType=Regular%20Season")
 nba_stats_playoffs = fromJSON("http://stats.nba.com/stats/leaguedashteamptshot?LeagueID=00&PerMode=Totals&Season=2014-15&SeasonType=Playoffs")
@@ -427,6 +427,7 @@ team_season_stats15_16 = franchise_data("2015-16")
 ```
 
 #Data cleaning
+After going through many trial and error runs, we noticed that alot of our data wasn't working with our model because they were factors with levels. We converted these to numeric, deleted any duplicate rows, and changed categorial values into numerical values.
 ```{r}
 # combining the data frames for teams
 cleanData = function(total_teams) {
@@ -494,6 +495,7 @@ game_by_game15_16 = cleanData(game_by_game15_16)
 <br>
 
 #Data Exploration
+In the graph below, we can see the teams that are top points ranking, like the Golden State Warriors, are also having the highest win percentage. Below that graph we can see the teams that made the NBA Finals and how they are currently doing. Poor Lakers aren't doing so well this season.
 ```{r}
 ## Plot Points Rank vs Win %
 par(mfrow=c(1,1))
@@ -577,6 +579,7 @@ text(team_season_stats15_16$FGA ~ team_season_stats15_16$FGM,labels=team_season_
 ```
 
 #Logistic Regression Model
+The model below uses some stats from a game by game of each team, we train on previous seasons and make our predictions on the current season. We can see our success rate is at about 81% win rate. 
 ```{r}
 
 fit = glm(wl ~  tov + reb + fgm + fg3m + fgm_opp + tov_opp + reb_opp + fg3m_opp, data = game_by_game14_15, family = binomial)
@@ -603,7 +606,11 @@ prec_recall_summary = function(predicts, actuals) {
   prec_rec$false_pos = prec_rec$FP/(prec_rec$FP + prec_rec$TN)
   return(prec_rec)
 }
+```
 
+
+We can see by our ROC graph that our model is doing very well, we ideally want it to be snugged up in the left corner.The plots below indicate the precision and recall. With the threshold at 0.6, about 65% of the teams that play we say actually win, and about 95% of the people who actually win we say they won..
+```{r}
 prec_rec1 = prec_recall_summary(predicts, actuals)
 
 par(mfrow=c(1,1))
@@ -619,7 +626,7 @@ grid(nx = NULL, ny = NULL, col = "lightgray", lty = "dotted",
 title("Precision recall curve")
 ```
 
-
+The method that we came up with was to take all the games from team 1 and team2 then sort them by date. After sorting by date we are able to get the most recent 30 games. We then sample 10 games out of the 30 to get relevant stats for the teams. Take the mean of those 10 games and give a prediction. We state that if a team has higher than a 60% chance of winning we will call it a win.
 ```{r}
 head_to_head = function(team1,team2){
 
@@ -652,7 +659,10 @@ head_to_head = function(team1,team2){
 
   return(team1_win_loss)
 }
+```
 
+The method below simulates a series between two teams. The first two games are at home for team 1, next two are away, then it is alternating until one team reaches 4 wins.
+```{r}
 series = function(team1,team2) {
   team1_score = 0
   team2_score = 0
@@ -719,7 +729,7 @@ paste0(team1, ": ", team1_score, ", ",team2, ": ", team2_score)
 ```
 
 
-
+This method is a modified version of our original head to head that just takes the last 10 games, returns a percentage of winning the game.
 ```{r}
 
 set.seed(12)
@@ -747,16 +757,22 @@ head_to_head_2 = function(team1,team2){
   
   return(team1_win_loss)
 }
+```
 
+After getting the percentage from above we are now able to check which team won factoring in probabilities.
+```{r}
 game = function(team1,team2){
 
   team1_home = head_to_head_2(team1,team2)
   x = sample(c(0,1),1,prob=c(team1_home,(1-team1_home)))
   ifelse(x == 0,return (team1), return (team2))
 }
+```
 
+We now run a series of 7 games similar to above and take the most appearing winner of each game. This should give us a more accurate result of who actually won.
+```{r}
 x = c()
-series_BRUNZ1x13 = function(team1,team2) {
+series_2 = function(team1,team2) {
   team1_score = 0
   team2_score = 0
 
@@ -846,15 +862,15 @@ print(paste0(team1, ": ", team1_score, ", ",team2, ": ", team2_score))
 #1st Round Predictions
 ```{r}
 set.seed(12)
-series_BRUNZ1x13("clippers","blazers")
-series_BRUNZ1x13("warriors","rockets")
-series_BRUNZ1x13("thunder","mavericks")
-series_BRUNZ1x13("spurs","grizzlies")
+series_2("clippers","blazers")
+series_2("warriors","rockets")
+series_2("thunder","mavericks")
+series_2("spurs","grizzlies")
 
-series_BRUNZ1x13("cavaliers","pistons")
-series_BRUNZ1x13("hawks","celtics")
-series_BRUNZ1x13("heat","hornets")
-series_BRUNZ1x13("raptors","pacers")
+series_2("cavaliers","pistons")
+series_2("hawks","celtics")
+series_2("heat","hornets")
+series_2("raptors","pacers")
 
 
 series("clippers","blazers")
@@ -873,11 +889,11 @@ series("raptors","pacers")
 ```{r}
 
 set.seed(12)
-series_BRUNZ1x13("warriors","blazers")
-series_BRUNZ1x13("thunder","spurs")
+series_2("warriors","blazers")
+series_2("thunder","spurs")
 
-series_BRUNZ1x13("cavaliers","hawks")
-series_BRUNZ1x13("heat","raptors")
+series_2("cavaliers","hawks")
+series_2("heat","raptors")
 
 series("warriors","blazers")
 series("thunder","spurs")
@@ -893,9 +909,9 @@ series("heat","raptors")
 ```{r}
 
 set.seed(12)
-series_BRUNZ1x13("warriors","thunder")
+series_2("warriors","thunder")
 
-series_BRUNZ1x13("cavaliers","raptors")
+series_2("cavaliers","raptors")
 
 series("warriors","thunder")
 
@@ -910,7 +926,7 @@ series("cavaliers","raptors")
 ```{r}
 
 set.seed(12)
-series_BRUNZ1x13("warriors","cavaliers")
+series_2("warriors","cavaliers")
 
 
 series("warriors","cavaliers")
