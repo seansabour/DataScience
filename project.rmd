@@ -12,8 +12,8 @@ library(e1071)
 library(rpart)
 library(rpart.plot)
 library(maptree)
-#source("C:/Users/joshua/Downloads/lin-regr-util.R")
-source("/Users/seansabour/Desktop/School/CST495 Data Science/Homework/lin-regr-util.R")
+source("C:/Users/joshua/Downloads/lin-regr-util.R")
+#source("/Users/seansabour/Desktop/School/CST495 Data Science/Homework/lin-regr-util.R")
 ```
 
 #Data Acquisition 
@@ -488,11 +488,9 @@ game_by_game14_15 = cleanData(game_by_game14_15)
 game_by_game15_16 = cleanData(game_by_game15_16)
 ```
 
-<br>
-<br>
-<br>
-<br>
-<br>
+<br />
+<br />
+<br />
 
 #Data Exploration
 In the graph below, we can see the teams that are top points ranking, like the Golden State Warriors, are also having the highest win percentage. Below that graph we can see the teams that made the NBA Finals and how they are currently doing. Poor Lakers aren't doing so well this season.
@@ -508,16 +506,15 @@ plot(team_season_stats15_16$NBA_FINALS_APPEARANCE ~ team_season_stats15_16$WIN_P
 text(team_season_stats15_16$NBA_FINALS_APPEARANCE ~ team_season_stats15_16$WIN_PCT,labels=team_season_stats15_16$TEAM_NAME, cex= 0.5, pos=3)
 
 ```
-
-<br>
-<br>
+<br />
+<br />
 
 Taking a look at the features fg3_pct, fg3m, and fg3a look related, so does ast and fgm.
 ```{r}
 plot(~ away  + fgm + stl + blk + ast + fg3_pct + fg3a + fg3m, data = game_by_game15_16)
 ```
-<br>
-<br>
+<br />
+<br />
 
 Looks like the grizzlies have hightest point median. There are some more than 3/2 times the upper quartile outliers with the pistons and lakers
 . 
@@ -525,24 +522,24 @@ Looks like the grizzlies have hightest point median. There are some more than 3/
 plot(game_by_game15_16$fg_pct ~ game_by_game15_16$team_id, col=c("firebrick"), xaxt='n', xlab="Team Names", ylab="Field goal percentage")
 axis(1, at=1:30, labels=game_by_game15_16$team_name[1:30], las=2, cex.axis= 0.6)
 ```
-<br>
-<br>
+<br />
+<br />
 
 Looks like the grizzlies have hightest 3 point median. There are some more than 3/2 times the upper quartile outliers with the kings and pacers. 
 ```{r}
 plot(game_by_game15_16$fg3_pct ~ game_by_game15_16$team_id, col=c("firebrick"), xaxt='n', xlab="Team Names", ylab="3 pointers percentage")
 axis(1, at=1:30, labels=game_by_game15_16$team_name[1:30], las=2, cex.axis= 0.6)
 ```
-<br>
-<br>
+<br />
+<br />
 
 Looks like the Pistons have hightest personal fouls median. There are lot more 3/2 times the upper quartile outliers than lower. I would think that high foul teams would give their opponets an advatage to score more points.
 ```{r}
 plot(game_by_game15_16$pf ~ game_by_game15_16$team_id, col=c("firebrick"), xaxt='n', xlab="Team Names", ylab="Personal fouls")
 axis(1, at=1:30, labels=game_by_game15_16$team_name[1:30], las=2, cex.axis= 0.6)
 ```
-<br>
-<br>
+<br />
+<br />
 
 Looks like the Grizzies have hightest total points median. There are lot more 3/2 times the upper quartile outliers than lower.
 
@@ -550,16 +547,16 @@ Looks like the Grizzies have hightest total points median. There are lot more 3/
 plot(game_by_game15_16$pts ~ game_by_game15_16$team_id, col=c("firebrick"), xaxt='n', xlab="Team Names", ylab="Total points")
 axis(1, at=1:30, labels=game_by_game15_16$team_name[1:30], las=2, cex.axis= 0.6)
 ```
-<br>
-<br>
+<br />
+<br />
 
 These three plots are the related ones that I stated in the first plot.
 ```{r}
-plot(game_by_game15_16$fg3m ~ game_by_game15_16$fg3_pct, col=c("firebrick", "blue"), pch=16)
+plot(game_by_game15_16$fg3m ~ game_by_game15_16$fg3_pct, col=c("firebrick", "blue"), pch=16, main="3 Pointers made vs. 3 point percentage")
 
-plot(game_by_game15_16$fgm ~ game_by_game15_16$ast, col=c("firebrick", "blue"), pch=16)
+plot(game_by_game15_16$fgm ~ game_by_game15_16$ast, col=c("firebrick", "blue"), pch=16, main="Field goals made vs. assists")
 
-plot(game_by_game15_16$fg3a ~ game_by_game15_16$fg3m, col=c("firebrick", "blue"), pch=16)
+plot(game_by_game15_16$fg3a ~ game_by_game15_16$fg3m, col=c("firebrick", "blue"), pch=16, main="3 pointers attempted vs. 3 pointers made")
 ```
 
 ```{r}
@@ -579,7 +576,7 @@ text(team_season_stats15_16$FGA ~ team_season_stats15_16$FGM,labels=team_season_
 ```
 
 #Logistic Regression Model
-The model below uses some stats from a game by game of each team, we train on previous seasons and make our predictions on the current season. We can see our success rate is at about 81% win rate. 
+The model below uses some stats from a game by game of each team, we train on previous seasons and make our predictions on the current season. We can see our success rate is at about 81% win rate. Also we created conf. matrix to and ploted it.
 ```{r}
 
 fit = glm(wl ~  tov + reb + fgm + fg3m + fgm_opp + tov_opp + reb_opp + fg3m_opp, data = game_by_game14_15, family = binomial)
@@ -588,6 +585,14 @@ summary(fit)
 y = predict(fit,newdata = game_by_game15_16,type="response")
 predicts = as.numeric(y > 0.6)
 actuals = game_by_game15_16$wl
+
+conf_mtx = table(predicts, actuals)
+
+print(conf_mtx)
+
+plot(conf_mtx)
+
+
 mean(predicts == actuals)
 
 
@@ -859,20 +864,22 @@ print(paste0(team1, ": ", team1_score, ", ",team2, ": ", team2_score))
 }
 ```
 
-#1st Round Predictions
+#1st Round Predictions for the First model
+
+Winners are:
+
+Blazers
+Warriors
+Thunder
+Spurs
+Cavaliers
+Celtics
+Hornets
+Pacers
+
+
 ```{r}
 set.seed(12)
-series_2("clippers","blazers")
-series_2("warriors","rockets")
-series_2("thunder","mavericks")
-series_2("spurs","grizzlies")
-
-series_2("cavaliers","pistons")
-series_2("hawks","celtics")
-series_2("heat","hornets")
-series_2("raptors","pacers")
-
-
 series("clippers","blazers")
 series("warriors","rockets")
 series("thunder","mavericks")
@@ -884,17 +891,47 @@ series("heat","hornets")
 series("raptors","pacers")
 ```
 
-<br>
+##1st Round Predictions for the second model
+
+Winners are:
+
+Clippers
+Warriors
+Thunder
+Spurs
+Pistons
+Hawks
+Hornets
+Raptors
+
+
+```{r}
+set.seed(12)
+series_2("cavaliers","pistons")
+series_2("hawks","celtics")
+series_2("heat","hornets")
+series_2("raptors","pacers")
+
+set.seed(12)
+series_2("clippers","blazers")
+series_2("warriors","rockets")
+series_2("thunder","mavericks")
+series_2("spurs","grizzlies")
+```
+
+
+##2nd Round Predictions for the first model
+Winners are:
+
+Warriors
+Thunder
+Cavaliers
+Raptors
+
 
 ```{r}
 
 set.seed(12)
-series_2("warriors","blazers")
-series_2("thunder","spurs")
-
-series_2("cavaliers","hawks")
-series_2("heat","raptors")
-
 series("warriors","blazers")
 series("thunder","spurs")
 
@@ -902,33 +939,76 @@ series("cavaliers","hawks")
 series("heat","raptors")
 
 ```
+##2nd Round Predictions for the second model
+Winners are:
 
-<br>
-
+Warriors
+Thunder
+Pistons
+Hornets
 
 ```{r}
 
 set.seed(12)
-series_2("warriors","thunder")
+series_2("warriors","clippers")
 
-series_2("cavaliers","raptors")
+series_2("thunder","spurs")
 
+series("pistons","hawks")
+
+series("hornets","raptors")
+
+```
+
+
+##3rd Round Predictions for the first model
+Winners are:
+
+Warriors
+Cavaliers
+```{r}
+
+set.seed(12)
 series("warriors","thunder")
 
 series("cavaliers","raptors")
+```
+
+##3rd Round Predictions for the second model
+Winners are:
+
+Warriors
+Pistons
+```{r}
+series_2("warriors","thunder")
+
+series_2("pistons","hornets")
 
 ```
 
 
+##Final Round Predictions for the first model
+Winner is:
 
-
-
+Warriors
 ```{r}
 
 set.seed(12)
-series_2("warriors","cavaliers")
-
-
 series("warriors","cavaliers")
+```
+
+##Final Round Predictions for the first model
+Winner is:
+
+Warriors
+```{r}
+set.seed(12)
+series_2("warriors","pistons")
 
 ```
+
+##Final Thoughts
+
+Thought both models predict the Warriors win the championship, the first model does a better job of predicting closer to what is actually happening in the playoffs.
+
+<a href="http://www.nba.com/playoffs/">Playoff Bracket Click Here</a>
